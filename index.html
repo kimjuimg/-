@@ -17,10 +17,11 @@
     --accent-bg: #e3e6f8;
     --warn-bg: #fff4e5;
     --warn-ink: #7a4b00;
+    --on-accent: #ffffff;
     --radius: 20px;
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --bg: #161a33;
       --card: #20254a;
       --ink: #eef0ff;
@@ -31,7 +32,23 @@
       --accent-bg: #2b3163;
       --warn-bg: #3a2f1c;
       --warn-ink: #ffd89a;
+      --on-accent: #161a33;
+      color-scheme: dark;
     }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161a33;
+    --card: #20254a;
+    --ink: #eef0ff;
+    --soft: #b5bae6;
+    --line: #343a6b;
+    --accent: #9aa3f0;
+    --accent-2: #6e78c9;
+    --accent-bg: #2b3163;
+    --warn-bg: #3a2f1c;
+    --warn-ink: #ffd89a;
+    --on-accent: #161a33;
+    color-scheme: dark;
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -55,8 +72,7 @@
     border-radius: 12px; background: var(--card); color: var(--soft);
     border: 2px solid var(--line); cursor: pointer;
   }
-  .steps li.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
-  @media (prefers-color-scheme: dark) { .steps li.on { color: #161a33; } }
+  .steps li.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
 
   .card {
     background: var(--card); border-radius: var(--radius);
@@ -72,10 +88,9 @@
   .btn {
     display: block; width: 100%; min-height: 60px;
     border: none; border-radius: 16px;
-    background: var(--accent); color: #fff; font-weight: 700; font-size: 21px;
+    background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 21px;
     padding: 12px 16px; margin-top: 14px;
   }
-  @media (prefers-color-scheme: dark) { .btn { color: #161a33; } }
   .btn.ghost { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
   .btn:disabled { opacity: .45; cursor: default; }
   .btn:focus-visible, .chip:focus-visible, textarea:focus-visible, input:focus-visible {
@@ -109,7 +124,7 @@
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 0 40px rgba(75, 85, 168, .35);
   }
-  .circle span { color: #fff; font-size: 40px; font-weight: 700; }
+  .circle span { color: var(--on-accent); font-size: 40px; font-weight: 700; }
   .breath-word { font-size: 28px; font-weight: 700; margin-top: 14px; min-height: 1.6em; }
   .breath-count { color: var(--soft); }
 
@@ -582,7 +597,7 @@
       var del = document.createElement("button"); del.className = "del"; del.type = "button";
       del.textContent = "이 기록 지우기";
       del.addEventListener("click", function () {
-        if (!confirm("이 기록을 지울까요?")) return;
+        if (!askTwice(del, "한 번 더 누르면 지워져요")) return;
         save(load().filter(function (x) { return x.id !== r.id; }));
         renderRecords();
       });
@@ -592,8 +607,18 @@
     $("rclear").classList.toggle("hidden", !list.length);
   }
 
+  // 실수로 지우지 않도록 두 번 눌러야 지워져요 (3초 안에)
+  function askTwice(btn, msg) {
+    if (btn.dataset.armed) return true;
+    var original = btn.textContent;
+    btn.dataset.armed = "1"; btn.textContent = msg;
+    setTimeout(function () { delete btn.dataset.armed; btn.textContent = original; }, 3000);
+    return false;
+  }
+
   $("rclear").addEventListener("click", function () {
-    if (!confirm("모든 기록을 지울까요? 지운 기록은 되돌릴 수 없어요.")) return;
+    if (!askTwice($("rclear"), "정말 모두 지울까요? 한 번 더 누르면 되돌릴 수 없어요")) return;
+    $("rclear").textContent = "기록 모두 지우기";
     save([]); renderRecords();
   });
   $("restart").addEventListener("click", function () { show(1); });
