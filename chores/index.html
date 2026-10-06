@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2d473a">
+<title>우리 집 1인 1역</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap">
+<style>
+  /* 교실 칠판: 나무 틀 안의 초록 칠판 한 장, 가족마다 다른 분필 색 카드 */
+  :root {
+    color-scheme: dark;
+    --frame: #6e4b2c;
+    --frame-dark: #533720;
+    --board: #2d473a;
+    --board-hi: #36564a;
+    --chalk: #f2f0e6;
+    --chalk-dim: #b8c6bc;
+    --chalk-faint: rgba(242, 240, 230, 0.28);
+    --yellow: #f5df7a;
+    --pink: #f3a8c2;
+    --sky: #93d2f2;
+    --mint: #aee4a6;
+    --orange: #f6b26d;
+    --lilac: #cdb8f3;
+    --on-chalk: #22382d;
+    --hand: "Gaegu", "Nanum Pen Script", "Apple SD Gothic Neo", "Malgun Gothic", cursive;
+    --read: "Gowun Dodum", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--frame);
+    background-image: repeating-linear-gradient(92deg, var(--frame) 0 14px, var(--frame-dark) 14px 16px, var(--frame) 16px 31px);
+    color: var(--chalk);
+    font-family: var(--read);
+    font-size: 20px;
+    line-height: 1.6;
+    word-break: keep-all;
+    padding: 10px;
+  }
+  .board {
+    max-width: 560px; margin: 0 auto;
+    min-height: calc(100vh - 20px);
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.06), transparent 55%),
+      radial-gradient(ellipse at 80% 70%, rgba(255,255,255,.04), transparent 50%),
+      var(--board);
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 4px var(--frame-dark), inset 0 0 40px rgba(0,0,0,.35);
+    padding-block: 22px 28px; padding-inline: 16px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  h1, h2, .name, .hand { font-family: var(--hand); font-weight: 700; text-wrap: balance; }
+  h1 { font-size: 44px; line-height: 1.1; margin: 0; letter-spacing: -0.5px; }
+  .date { font-family: var(--hand); font-size: 22px; color: var(--chalk-dim); }
+  h2 { font-size: 30px; margin: 0; line-height: 1.2; }
+  .step { display: flex; flex-direction: column; gap: 12px; }
+  .step-no {
+    font-family: var(--hand); font-size: 20px; color: var(--yellow);
+    letter-spacing: 1px;
+  }
+  .hint { color: var(--chalk-dim); margin: 0; font-size: 18px; }
+  hr.chalk { border: none; border-top: 2px dashed var(--chalk-faint); margin: 0; width: 100%; }
+
+  /* 입력과 버튼 */
+  .add-row { display: flex; gap: 8px; }
+  .add-row input { flex: 1; min-width: 0; }
+  input[type="text"] {
+    font: inherit; font-size: 20px; color: var(--chalk);
+    background: rgba(0,0,0,.18); border: 2px solid var(--chalk-faint);
+    border-radius: 10px; padding: 12px 14px; min-height: 56px; width: 100%;
+  }
+  input::placeholder { color: var(--chalk-dim); opacity: .75; }
+  button { font: inherit; cursor: pointer; }
+  .btn {
+    min-height: 56px; padding: 8px 18px; border-radius: 10px;
+    font-family: var(--hand); font-size: 24px; font-weight: 700;
+    background: var(--yellow); color: var(--on-chalk); border: none;
+    white-space: nowrap;
+  }
+  .btn.line { background: transparent; color: var(--chalk); border: 2px solid var(--chalk-faint); }
+  .btn.small { min-height: 44px; font-size: 20px; padding: 4px 12px; }
+  .btn.wide { width: 100%; }
+  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+
+  /* 전체 진행 */
+  .progress-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .progress-text { font-family: var(--hand); font-size: 26px; }
+  .bar { height: 16px; border-radius: 8px; border: 2px solid var(--chalk-faint); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--chalk); transition: width .4s ease; }
+
+  /* 분리수거 당번 */
+  .duty {
+    border: 2px dashed var(--chalk); border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .duty .who { font-family: var(--hand); font-size: 34px; line-height: 1.2; }
+  .duty .order { display: flex; flex-wrap: wrap; gap: 6px; font-size: 17px; color: var(--chalk-dim); }
+  .duty .order span.now { color: var(--chalk); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+
+  /* 사람 카드 */
+  .cards { display: flex; flex-direction: column; gap: 18px; }
+  .card {
+    --c: var(--yellow);
+    border: 3px solid var(--c); border-radius: 14px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+    background: rgba(255,255,255,.035);
+  }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .name { font-size: 38px; color: var(--c); line-height: 1.1; }
+  .count { font-family: var(--hand); font-size: 22px; color: var(--chalk-dim); }
+  .card .bar > i { background: var(--c); }
+  .tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .task { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px dashed var(--chalk-faint); }
+  .task label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 0; }
+  .task input[type="checkbox"] {
+    appearance: none; -webkit-appearance: none; margin: 0; flex: none;
+    width: 34px; height: 34px; border: 3px solid var(--c); border-radius: 8px;
+    display: grid; place-content: center; cursor: pointer; background: transparent;
+  }
+  .task input[type="checkbox"]::after { content: "✓"; font-size: 26px; font-weight: 700; color: var(--board); line-height: 1; transform: scale(0); }
+  .task input[type="checkbox"]:checked { background: var(--c); }
+  .task input[type="checkbox"]:checked::after { transform: scale(1); }
+  .task .t { display: flex; flex-direction: column; min-width: 0; }
+  .task .t span { overflow-wrap: anywhere; }
+  .task.done .t span { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--c); color: var(--chalk-dim); }
+  .task .when { font-size: 15px; color: var(--c); }
+  .x {
+    flex: none; width: 44px; height: 44px; border-radius: 50%;
+    border: 2px solid var(--chalk-faint); background: transparent; color: var(--chalk-dim); font-size: 22px; line-height: 1;
+  }
+  .empty-tasks { color: var(--chalk-dim); font-size: 18px; margin: 0; }
+
+  /* 스티커 */
+  .stickers { display: flex; flex-direction: column; gap: 6px; }
+  .stickers .lbl { font-family: var(--hand); font-size: 22px; }
+  .slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; }
+  .slot {
+    aspect-ratio: 1; max-width: 100%; border-radius: 50%;
+    border: 2px dashed var(--chalk-faint);
+    display: grid; place-content: center; font-size: 20px; line-height: 1;
+  }
+  .slot.on { border: 2px solid var(--c); background: var(--c); color: var(--board); }
+  .slot.pop { animation: pop .5s ease; }
+  @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+  .card-foot { display: flex; justify-content: flex-end; }
+  .del-person { background: none; border: none; color: var(--chalk-dim); font-size: 16px; text-decoration: underline; padding: 8px 0; min-height: 44px; }
+
+  /* 처음 화면 */
+  .welcome { border: 2px dashed var(--chalk-faint); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* 칭찬 한마디 */
+  .cheer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    display: flex; justify-content: center;
+  }
+  .cheer-box {
+    width: 100%; max-width: 540px;
+    background: var(--chalk); color: var(--on-chalk);
+    border-radius: 14px; padding: 18px; box-shadow: 0 8px 30px rgba(0,0,0,.45);
+    display: flex; flex-direction: column; gap: 10px;
+    animation: rise .35s ease;
+  }
+  .cheer-box p { margin: 0; font-family: var(--hand); font-size: 28px; line-height: 1.3; font-weight: 700; }
+  .cheer-box p + p { font-size: 24px; }
+  .cheer-box .btn { background: var(--board); color: var(--chalk); align-self: stretch; }
+  @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
+
+  footer.note { color: var(--chalk-dim); font-size: 16px; text-align: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slot.pop, .cheer-box { animation: none; }
+    .bar > i { transition: none; }
+  }
+</style>
+
+</head>
+<body>
+<div class="board">
+  <header>
+    <div class="date" id="today"></div>
+    <h1>우리 집 1인 1역</h1>
+    <p class="hint">누가 무엇을 하는지 칠판에 다 같이 적어요. 다 하면 내가 직접 체크해요!</p>
+  </header>
+
+  <!-- 1. 사람 등록하기 -->
+  <section class="step" aria-labelledby="s1">
+    <div class="step-no">1. 가족 이름 쓰기</div>
+    <h2 id="s1">우리 가족은 누구누구?</h2>
+    <form class="add-row" id="personForm" autocomplete="off">
+      <input type="text" id="personName" placeholder="예) 엄마, 아빠, 지우" maxlength="10" aria-label="가족 이름">
+      <button class="btn" type="submit">추가</button>
+    </form>
+    <p class="hint" id="personMsg" aria-live="polite">이름을 쓰면 사람마다 다른 색 카드가 생겨요.</p>
+  </section>
+
+  <div class="welcome" id="welcome">
+    <p class="hand" style="font-size:26px;margin:0">아직 칠판이 비어 있어요.</p>
+    <p class="hint">가족이 다 같이 모여서 이름을 하나씩 써 보세요. 어떻게 생겼는지 먼저 보고 싶으면 아래 버튼을 눌러요.</p>
+    <button class="btn line wide" id="sample" type="button">예시 가족으로 채워 보기</button>
+  </div>
+
+  <!-- 4. 진행 상황 -->
+  <section class="step" id="progressSec" hidden aria-labelledby="s4">
+    <hr class="chalk">
+    <div class="step-no">오늘 우리 가족</div>
+    <div class="progress-wrap">
+      <div class="progress-text" id="s4">0개 중 0개 했어요</div>
+      <div class="bar" role="progressbar" aria-labelledby="s4" id="totalBar"><i></i></div>
+    </div>
+  </section>
+
+  <!-- 분리수거 당번 -->
+  <section class="duty" id="duty" hidden aria-labelledby="dutyWho">
+    <div class="step-no">분리수거 당번 · 돌아가면서 해요</div>
+    <div class="who" id="dutyWho"></div>
+    <div class="order" id="dutyOrder"></div>
+    <div class="hint" id="dutyLast"></div>
+    <button class="btn wide" id="dutyDone" type="button">다 했어요! 다음 사람 차례로</button>
+  </section>
+
+  <!-- 2·3·5. 카드: 할 일 추가, 체크, 스티커 -->
+  <section class="step" id="cardsSec" hidden aria-labelledby="s2">
+    <hr class="chalk">
+    <div class="step-no">2. 할 일 쓰기 · 3. 다 하면 체크</div>
+    <h2 id="s2">내 할 일</h2>
+    <p class="hint">하나 끝낼 때마다 칭찬 스티커가 1개씩 붙어요. 체크는 매일 아침 새로 시작해요.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- 보상 정하기 -->
+  <section class="step" id="rewardSec" hidden aria-labelledby="s5">
+    <hr class="chalk">
+    <div class="step-no">스티커 10개를 모으면</div>
+    <h2 id="s5">우리 가족 보상</h2>
+    <p class="hint">무엇을 받을지 가족이 같이 정해요.</p>
+    <form class="add-row" id="rewardForm" autocomplete="off">
+      <input type="text" id="rewardText" maxlength="40" aria-label="보상">
+      <button class="btn" type="submit">정하기</button>
+    </form>
+    <p class="hint" id="rewardMsg" aria-live="polite"></p>
+  </section>
+
+  <footer class="note">기록은 이 휴대폰에만 저장돼요.</footer>
+</div>
+
+<div class="cheer" id="cheer" hidden role="status" aria-live="polite">
+  <div class="cheer-box">
+    <div id="cheerText"></div>
+    <button class="btn" id="cheerClose" type="button">좋아!</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "uri-jip-1in1yeok-v1";
+  var COLORS = ["--yellow", "--pink", "--sky", "--mint", "--orange", "--lilac"];
+  var GOAL = 10;
+  var DEFAULT_REWARD = "주말에 먹고 싶은 간식 고르기";
+
+  var PRAISE = [
+    "{n}, 오늘 할 일을 다 했어! 정말 멋져!",
+    "{n} 덕분에 우리 집이 반짝반짝해졌어!",
+    "{n}, 끝까지 해냈구나! 최고야!",
+    "{n}, 말하지 않아도 스스로 했네! 대단해!"
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  function todayKey() {
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  }
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  // ---------- 저장 (이 기기에만) ----------
+  function fresh() { return { people: [], reward: DEFAULT_REWARD, dutyIdx: 0, dutyLast: null, day: todayKey() }; }
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY));
+      if (s && Array.isArray(s.people)) return s;
+    } catch (e) {}
+    return fresh();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  var state = load();
+
+  // 새 날이 되면 체크만 지워요 (스티커는 그대로)
+  if (state.day !== todayKey()) {
+    state.people.forEach(function (p) { p.tasks.forEach(function (t) { t.done = false; t.doneAt = null; }); });
+    state.day = todayKey();
+    save();
+  }
+
+  // ---------- 1. 사람 등록하기 ----------
+  function nextColor() {
+    var used = state.people.map(function (p) { return p.color; });
+    for (var i = 0; i < COLORS.length; i++) if (used.indexOf(COLORS[i]) < 0) return COLORS[i];
+    return COLORS[state.people.length % COLORS.length];
+  }
+  function addPerson(name, tasks) {
+    state.people.push({
+      id: uid(), name: name, color: nextColor(), stickers: 0, rewarded: 0,
+      tasks: (tasks || []).map(function (t) { return { id: uid(), text: t, done: false, doneAt: null }; })
+    });
+  }
+  $("personForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("personName").value.trim();
+    if (!name) { $("personMsg").textContent = "이름을 먼저 써 주세요."; return; }
+    if (state.people.some(function (p) { return p.name === name; })) {
+      $("personMsg").textContent = "‘" + name + "’은(는) 벌써 칠판에 있어요."; return;
+    }
+    addPerson(name);
+    $("personName").value = "";
+    $("personMsg").textContent = name + " 카드가 생겼어요! 이제 할 일을 써 볼까요?";
+    save(); render();
+    var input = document.querySelector('[data-add-for="' + state.people[state.people.length - 1].id + '"]');
+    if (input) input.focus();
+  });
+
+  $("sample").addEventListener("click", function () {
+    addPerson("엄마", ["저녁 설거지하기", "빨래 개기"]);
+    addPerson("아빠", ["음식물 쓰레기 버리기", "욕실 청소하기"]);
+    addPerson("지우", ["밥 먹기 전에 수저 놓기", "내 방 책상 정리하기", "화분에 물 주기"]);
+    addPerson("민준", ["벗은 신발 가지런히 놓기", "장난감 제자리에 두기"]);
+    save(); render();
+  });
+
+  // ---------- 2. 할 일 추가·지우기, 3. 체크하기 ----------
+  function find(pid) { for (var i = 0; i < state.people.length; i++) if (state.people[i].id === pid) return state.people[i]; }
+
+  function addSticker(p) {
+    p.stickers++;
+    var lines = [];
+    if (p.stickers % GOAL === 0 && p.stickers / GOAL > p.rewarded) {
+      p.rewarded = p.stickers / GOAL;
+      lines.push(p.name + ", 칭찬 스티커 " + GOAL + "개를 다 모았어요!");
+      lines.push("보상: " + (state.reward || DEFAULT_REWARD));
+    }
+    return lines;
+  }
+
+  function toggleTask(pid, tid) {
+    var p = find(pid); if (!p) return;
+    var t = p.tasks.filter(function (x) { return x.id === tid; })[0]; if (!t) return;
+    t.done = !t.done;
+    var lines = [];
+    if (t.done) {
+      t.doneAt = Date.now();
+      lines = addSticker(p);
+      if (p.tasks.every(function (x) { return x.done; })) lines.unshift(pick(PRAISE).replace("{n}", p.name));
+      var withTasks = state.people.filter(function (x) { return x.tasks.length; });
+      if (withTasks.length > 1 && withTasks.every(function (x) { return x.tasks.every(function (y) { return y.done; }); })) {
+        lines.push("우리 가족 모두 오늘 할 일을 다 했어요! 오늘은 잔소리 없는 날!");
+      }
+    } else {
+      t.doneAt = null;
+      p.stickers = Math.max(0, p.stickers - 1);
+    }
+    save(); render(t.done ? pid : null);
+    if (lines.length) cheer(lines);
+  }
+
+  // ---------- 분리수거 당번 ----------
+  $("dutyDone").addEventListener("click", function () {
+    var n = state.people.length; if (n < 2) return;
+    var idx = state.dutyIdx % n;
+    var p = state.people[idx];
+    var lines = [p.name + ", 분리수거 고마워! 스티커 1개!"].concat(addSticker(p));
+    state.dutyLast = { name: p.name, at: Date.now() };
+    state.dutyIdx = (idx + 1) % n;
+    lines.push("다음 분리수거는 " + state.people[state.dutyIdx].name + " 차례예요.");
+    save(); render(p.id); cheer(lines);
+  });
+
+  // ---------- 보상 정하기 ----------
+  $("rewardForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("rewardText").value.trim();
+    state.reward = v || DEFAULT_REWARD;
+    $("rewardText").value = state.reward;
+    $("rewardMsg").textContent = "정했어요! 스티커 10개를 모으면 ‘" + state.reward + "’";
+    save();
+  });
+
+  // ---------- 칭찬 한마디 ----------
+  function cheer(lines) {
+    var box = $("cheerText"); box.innerHTML = "";
+    lines.forEach(function (l) { var p = document.createElement("p"); p.textContent = l; box.appendChild(p); });
+    $("cheer").hidden = false;
+    $("cheerClose").focus({ preventScroll: true });
+  }
+  $("cheerClose").addEventListener("click", function () { $("cheer").hidden = true; });
+
+  // 실수로 지우지 않게 두 번 눌러야 지워져요
+  function askTwice(btn, msg) {
+    if (btn.dataset.armed) return true;
+    var original = btn.textContent;
+    btn.dataset.armed = "1"; btn.textContent = msg;
+    setTimeout(function () { if (btn.isConnected) { delete btn.dataset.armed; btn.textContent = original; } }, 3000);
+    return false;
+  }
+
+  function time(ms) {
+    var d = new Date(ms), h = d.getHours(), m = String(d.getMinutes()).padStart(2, "0");
+    return (h < 12 ? "오전 " : "오후 ") + (h % 12 || 12) + ":" + m;
+  }
+  function day(ms) { var d = new Date(ms); return (d.getMonth() + 1) + "월 " + d.getDate() + "일"; }
+
+  // ---------- 화면 그리기 ----------
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function render(popFor) {
+    var has = state.people.length > 0;
+    $("welcome").hidden = has;
+    $("cardsSec").hidden = !has;
+    $("progressSec").hidden = !has;
+    $("rewardSec").hidden = !has;
+    $("rewardText").value = state.reward || DEFAULT_REWARD;
+
+    // 4. 진행 상황
+    var total = 0, done = 0;
+    state.people.forEach(function (p) { total += p.tasks.length; done += p.tasks.filter(function (t) { return t.done; }).length; });
+    $("s4").textContent = total ? (total + "개 중 " + done + "개 했어요" + (done === total ? " · 다 끝!" : "")) : "아직 할 일이 없어요";
+    $("totalBar").firstChild.style.width = (total ? done / total * 100 : 0) + "%";
+    $("totalBar").setAttribute("aria-valuenow", done); $("totalBar").setAttribute("aria-valuemax", total);
+
+    // 분리수거 당번
+    var n = state.people.length;
+    $("duty").hidden = n < 2;
+    if (n >= 2) {
+      var idx = state.dutyIdx % n;
+      $("dutyWho").textContent = "이번 차례: " + state.people[idx].name;
+      var order = $("dutyOrder"); order.innerHTML = "";
+      state.people.forEach(function (p, i) {
+        if (i) order.appendChild(el("span", null, "→"));
+        order.appendChild(el("span", i === idx ? "now" : null, p.name));
+      });
+      $("dutyLast").textContent = state.dutyLast ? "지난번: " + state.dutyLast.name + " (" + day(state.dutyLast.at) + " " + time(state.dutyLast.at) + ")" : "순서는 가족 카드 순서대로예요.";
+    }
+
+    // 카드
+    var wrap = $("cards"); wrap.innerHTML = "";
+    state.people.forEach(function (p) {
+      var card = el("article", "card");
+      card.style.setProperty("--c", "var(" + p.color + ")");
+
+      var head = el("div", "card-head");
+      var doneN = p.tasks.filter(function (t) { return t.done; }).length;
+      head.appendChild(el("div", "name", p.name));
+      head.appendChild(el("div", "count", p.tasks.length ? p.tasks.length + "개 중 " + doneN + "개 했어요" : "할 일을 써 주세요"));
+      card.appendChild(head);
+
+      var bar = el("div", "bar"); var fill = el("i");
+      fill.style.width = (p.tasks.length ? doneN / p.tasks.length * 100 : 0) + "%";
+      bar.appendChild(fill); card.appendChild(bar);
+
+      var ul = el("ul", "tasks");
+      p.tasks.forEach(function (t) {
+        var li = el("li", "task" + (t.done ? " done" : ""));
+        var lab = el("label");
+        var cb = el("input"); cb.type = "checkbox"; cb.checked = t.done; cb.id = "cb-" + t.id;
+        cb.addEventListener("change", function () { toggleTask(p.id, t.id); });
+        var tx = el("div", "t");
+        tx.appendChild(el("span", null, t.text));
+        if (t.done && t.doneAt) tx.appendChild(el("small", "when", p.name + " · " + time(t.doneAt) + "에 했어요"));
+        lab.appendChild(cb); lab.appendChild(tx);
+        var x = el("button", "x", "×"); x.type = "button";
+        x.setAttribute("aria-label", t.text + " 지우기");
+        x.addEventListener("click", function () {
+          if (t.done) p.stickers = Math.max(0, p.stickers - 1);
+          p.tasks = p.tasks.filter(function (y) { return y.id !== t.id; });
+          save(); render();
+        });
+        li.appendChild(lab); li.appendChild(x);
+        ul.appendChild(li);
+      });
+      if (!p.tasks.length) card.appendChild(el("p", "empty-tasks", "예) 수저 놓기, 신발 정리하기, 화분에 물 주기"));
+      card.appendChild(ul);
+
+      var form = el("form", "add-row"); form.autocomplete = "off";
+      var inp = el("input"); inp.type = "text"; inp.maxLength = 30; inp.id = "add-" + p.id;
+      inp.placeholder = p.name + "의 할 일 쓰기"; inp.setAttribute("aria-label", p.name + "의 할 일");
+      inp.dataset.addFor = p.id;
+      var addBtn = el("button", "btn small", "추가"); addBtn.type = "submit";
+      form.appendChild(inp); form.appendChild(addBtn);
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = inp.value.trim(); if (!v) { inp.focus(); return; }
+        p.tasks.push({ id: uid(), text: v, done: false, doneAt: null });
+        save(); render();
+        var again = $("add-" + p.id); if (again) again.focus();
+      });
+      card.appendChild(form);
+
+      // 5. 칭찬 스티커
+      var st = el("div", "stickers");
+      var filled = p.stickers === 0 ? 0 : ((p.stickers - 1) % GOAL) + 1;
+      st.appendChild(el("div", "lbl", "칭찬 스티커 " + filled + " / " + GOAL + (p.rewarded ? " · 보상 " + p.rewarded + "번 받았어요" : "")));
+      var slots = el("div", "slots");
+      for (var i = 0; i < GOAL; i++) {
+        var on = i < filled;
+        var s = el("span", "slot" + (on ? " on" : "") + (on && i === filled - 1 && popFor === p.id ? " pop" : ""), on ? "★" : "");
+        slots.appendChild(s);
+      }
+      slots.setAttribute("aria-hidden", "true");
+      st.appendChild(slots);
+      card.appendChild(st);
+
+      var foot = el("div", "card-foot");
+      var del = el("button", "del-person", p.name + " 카드 지우기"); del.type = "button";
+      del.addEventListener("click", function () {
+        if (!askTwice(del, "한 번 더 누르면 지워져요")) return;
+        var i = state.people.indexOf(p);
+        state.people.splice(i, 1);
+        if (state.people.length) {
+          if (i < state.dutyIdx) state.dutyIdx--;
+          state.dutyIdx = state.dutyIdx % state.people.length;
+        } else state.dutyIdx = 0;
+        save(); render();
+      });
+      foot.appendChild(del); card.appendChild(foot);
+
+      wrap.appendChild(card);
+    });
+  }
+
+  var d = new Date();
+  $("today").textContent = (d.getMonth() + 1) + "월 " + d.getDate() + "일 " + "일월화수목금토"[d.getDay()] + "요일";
+  render();
+})();
+</script>
+</body>
+</html>
