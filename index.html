@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2b2f5e">
+<title>마음 고르기</title>
+<style>
+  :root {
+    --bg: #eef0fa;
+    --card: #ffffff;
+    --ink: #23264a;
+    --soft: #5a5f8f;
+    --line: #d6daf0;
+    --accent: #4b55a8;      /* 청자색 */
+    --accent-2: #7d86cf;
+    --accent-bg: #e3e6f8;
+    --warn-bg: #fff4e5;
+    --warn-ink: #7a4b00;
+    --radius: 20px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161a33;
+      --card: #20254a;
+      --ink: #eef0ff;
+      --soft: #b5bae6;
+      --line: #343a6b;
+      --accent: #9aa3f0;
+      --accent-2: #6e78c9;
+      --accent-bg: #2b3163;
+      --warn-bg: #3a2f1c;
+      --warn-ink: #ffd89a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-size: 20px;
+    line-height: 1.65;
+    word-break: keep-all;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 20px 16px 40px; }
+  header h1 { font-size: 30px; margin: 8px 0 4px; letter-spacing: -0.5px; }
+  header p { margin: 0 0 16px; color: var(--soft); }
+
+  /* 진행 표시 */
+  .steps { display: flex; gap: 6px; margin: 0 0 16px; padding: 0; list-style: none; }
+  .steps li {
+    flex: 1; text-align: center; font-size: 15px; padding: 8px 2px;
+    border-radius: 12px; background: var(--card); color: var(--soft);
+    border: 2px solid var(--line); cursor: pointer;
+  }
+  .steps li.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+  @media (prefers-color-scheme: dark) { .steps li.on { color: #161a33; } }
+
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 22px 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 14px rgba(40, 46, 110, 0.08);
+  }
+  .card h2 { font-size: 24px; margin: 0 0 6px; }
+  .tag { display: inline-block; font-size: 15px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+  .muted { color: var(--soft); }
+  .hidden { display: none !important; }
+
+  button { font: inherit; cursor: pointer; }
+  .btn {
+    display: block; width: 100%; min-height: 60px;
+    border: none; border-radius: 16px;
+    background: var(--accent); color: #fff; font-weight: 700; font-size: 21px;
+    padding: 12px 16px; margin-top: 14px;
+  }
+  @media (prefers-color-scheme: dark) { .btn { color: #161a33; } }
+  .btn.ghost { background: transparent; color: var(--accent); border: 2px solid var(--accent); }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .btn:focus-visible, .chip:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline: 3px solid var(--accent-2); outline-offset: 2px;
+  }
+
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .chip {
+    min-height: 58px; border-radius: 16px; border: 2px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 20px; padding: 8px;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent-bg); border-color: var(--accent); font-weight: 700; }
+
+  .comfort {
+    margin-top: 18px; padding: 20px; border-radius: 16px;
+    background: var(--accent-bg); font-size: 22px; line-height: 1.7;
+  }
+  .sos {
+    margin-top: 14px; padding: 14px 16px; border-radius: 16px;
+    border: 2px dashed var(--accent-2);
+  }
+
+  /* 호흡 */
+  .breath-stage { display: flex; flex-direction: column; align-items: center; padding: 10px 0; }
+  .circle-box { width: 260px; height: 260px; display: flex; align-items: center; justify-content: center; }
+  .circle {
+    width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, var(--accent-2), var(--accent));
+    transform: scale(.45);
+    transition-property: transform; transition-timing-function: ease-in-out;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px rgba(75, 85, 168, .35);
+  }
+  .circle span { color: #fff; font-size: 40px; font-weight: 700; }
+  .breath-word { font-size: 28px; font-weight: 700; margin-top: 14px; min-height: 1.6em; }
+  .breath-count { color: var(--soft); }
+
+  /* 질문 */
+  .q-progress { font-size: 16px; color: var(--soft); }
+  .q-text { font-size: 23px; font-weight: 700; margin: 6px 0 4px; }
+  textarea, input[type="text"] {
+    width: 100%; font: inherit; font-size: 20px; color: var(--ink);
+    background: var(--bg); border: 2px solid var(--line); border-radius: 14px;
+    padding: 14px; margin-top: 10px;
+  }
+  textarea { min-height: 140px; resize: vertical; }
+  .row { display: flex; gap: 10px; }
+  .row .btn { flex: 1; }
+  .summary dt { font-weight: 700; color: var(--accent); margin-top: 12px; font-size: 17px; }
+  .summary dd { margin: 2px 0 0; white-space: pre-wrap; }
+
+  /* 기록 */
+  .lbl { display: block; font-weight: 700; margin-top: 16px; }
+  .alert {
+    background: var(--warn-bg); color: var(--warn-ink);
+    border-radius: 16px; padding: 16px 18px; margin-bottom: 16px;
+  }
+  .alert strong { display: block; font-size: 21px; margin-bottom: 4px; }
+  .rec { border-top: 2px solid var(--line); padding: 14px 0; }
+  .rec:first-child { border-top: none; }
+  .rec .meta { font-size: 16px; color: var(--soft); }
+  .rec .topic { font-weight: 700; }
+  .rec .say { margin-top: 6px; padding-left: 12px; border-left: 4px solid var(--accent-2); }
+  .rec .del { background: none; border: none; color: var(--soft); font-size: 16px; text-decoration: underline; padding: 6px 0; }
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .count-pill { background: var(--accent-bg); border-radius: 999px; padding: 4px 14px; font-size: 17px; }
+  .count-pill.hot { background: var(--warn-bg); color: var(--warn-ink); font-weight: 700; }
+
+  /* 연락처 */
+  footer { margin-top: 24px; }
+  footer .card { border: 2px solid var(--accent-2); }
+  .call {
+    display: flex; align-items: center; justify-content: space-between;
+    text-decoration: none; color: var(--ink);
+    border-radius: 14px; background: var(--accent-bg);
+    padding: 14px 16px; margin-top: 10px; min-height: 64px;
+  }
+  .call b { font-size: 28px; color: var(--accent); }
+  .call small { display: block; font-size: 16px; color: var(--soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .circle { transition-duration: 0s !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>마음 고르기</h1>
+    <p>잠깐 멈추어도 괜찮아요. 천천히 함께 가 볼까요?</p>
+  </header>
+
+  <ol class="steps" aria-label="진행 단계">
+    <li data-go="1">① 위로</li>
+    <li data-go="2">② 호흡</li>
+    <li data-go="3">③ 생각</li>
+    <li data-go="4">④ 기록</li>
+  </ol>
+
+  <main>
+    <!-- 1. 위로 한마디 -->
+    <section id="step1" class="card" aria-labelledby="h1">
+      <span class="tag">1단계 · 위로 한마디</span>
+      <h2 id="h1">지금 마음은 어떤가요?</h2>
+      <p class="muted">가장 가까운 마음 하나를 골라 보세요.</p>
+      <div class="chips" id="moods"></div>
+      <div id="comfort" class="comfort hidden" aria-live="polite"></div>
+      <button class="btn" id="to2" disabled>숨 고르러 가기</button>
+      <div class="sos">
+        <b>지금 화가 치밀어 오르나요?</b><br>
+        <span class="muted">말하기 전에 숨부터 쉬어요. 마음은 나중에 골라도 돼요.</span>
+        <button class="btn ghost" id="quick">바로 숨 쉬기</button>
+      </div>
+    </section>
+
+    <!-- 2. 호흡 -->
+    <section id="step2" class="card hidden" aria-labelledby="h2">
+      <span class="tag">2단계 · 호흡으로 가라앉히기</span>
+      <h2 id="h2">원을 따라 숨 쉬어 볼까요?</h2>
+      <p class="muted">원이 커지면 4초 들이쉬고, 작아지면 6초 내쉬어요. 네 번만 함께해요.</p>
+      <div class="breath-stage">
+        <div class="circle-box"><div class="circle" id="circle"><span id="sec"></span></div></div>
+        <div class="breath-word" id="bword" aria-live="polite">준비되면 시작을 눌러요</div>
+        <div class="breath-count" id="bcount">0 / 4번</div>
+      </div>
+      <button class="btn" id="bstart">시작하기</button>
+      <button class="btn ghost hidden" id="to3">생각 꺼내러 가기</button>
+    </section>
+
+    <!-- 3. 생각 꺼내기 -->
+    <section id="step3" class="card hidden" aria-labelledby="h3">
+      <span class="tag">3단계 · 생각 꺼내기</span>
+      <h2 id="h3">하나씩 천천히 적어 봐요</h2>
+      <div id="qbox">
+        <div class="q-progress" id="qprog"></div>
+        <p class="q-text" id="qtext"></p>
+        <p class="muted" id="qhint"></p>
+        <textarea id="qans" aria-labelledby="qtext"></textarea>
+        <div class="row">
+          <button class="btn ghost" id="qprev">이전</button>
+          <button class="btn" id="qnext">다음</button>
+        </div>
+      </div>
+      <div id="qdone" class="hidden">
+        <p>잘했어요. 생각이 이렇게 정리되었어요.</p>
+        <dl class="summary" id="qsum"></dl>
+        <button class="btn" id="to4">기록으로 남기기</button>
+        <button class="btn ghost" id="qredo">다시 적기</button>
+      </div>
+    </section>
+
+    <!-- 4. 기록하고 반복 찾기 -->
+    <section id="step4" class="hidden" aria-labelledby="h4">
+      <div id="alerts"></div>
+      <div class="card">
+        <span class="tag">4단계 · 기록하고 반복 찾기</span>
+        <h2 id="h4">오늘 일을 남겨 둘까요?</h2>
+        <p class="muted">기록은 이 휴대폰에만 저장돼요. 어디로도 보내지 않아요.</p>
+
+        <p class="lbl" id="rtopic"><b>어떤 일이었나요?</b></p>
+        <div class="chips" id="topics" role="group" aria-labelledby="rtopic"></div>
+        <input type="text" id="rtopicEtc" class="hidden" placeholder="주제를 짧게 적어 주세요" maxlength="20">
+
+        <label class="lbl" for="rwhat">무슨 일이 있었나요?</label>
+        <textarea id="rwhat" placeholder="예) 아침에 등교 준비가 늦어져서 소리를 질렀다."></textarea>
+
+        <label class="lbl" for="rsay">다음엔 이렇게 말해 볼래요</label>
+        <textarea id="rsay" placeholder="예) 엄마가 마음이 급해. 5분 안에 양말부터 신어 줄래?"></textarea>
+
+        <button class="btn" id="rsave">기록하기</button>
+        <p id="rmsg" class="muted" aria-live="polite"></p>
+      </div>
+
+      <div class="card">
+        <h2>되풀이되는 주제</h2>
+        <p class="muted">같은 주제가 3번을 넘으면 알려 드릴게요.</p>
+        <div class="counts" id="counts"></div>
+      </div>
+
+      <div class="card">
+        <h2>지난 기록</h2>
+        <div id="list"></div>
+        <button class="btn ghost" id="rclear">기록 모두 지우기</button>
+      </div>
+      <button class="btn ghost" id="restart">처음으로 돌아가기</button>
+    </section>
+  </main>
+
+  <footer>
+    <div class="card">
+      <h2>혼자 버티기 힘들 때</h2>
+      <p class="muted">언제든 전화해도 괜찮아요. 도움을 청하는 것도 용기예요.</p>
+      <a class="call" href="tel:109"><span>자살예방 상담<small>24시간 · 누구나</small></span><b>109</b></a>
+      <a class="call" href="tel:129"><span>보건복지상담센터<small>위기·양육·복지 상담</small></span><b>129</b></a>
+      <a class="call" href="tel:112"><span>긴급 신고<small>위험한 상황일 때</small></span><b>112</b></a>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- 1. 위로 한마디 ----------
+  var MOODS = {
+    "지침": [
+      "하루 종일 아이 챙기고 집안일하느라 몸도 마음도 바닥났지요. 지친 건 게으른 게 아니라 그만큼 애썼다는 뜻이에요.",
+      "오늘은 완벽한 엄마 말고, 그냥 버텨 낸 엄마면 충분해요. 잠깐 쉬어도 아무 일 일어나지 않아요."
+    ],
+    "불안": [
+      "아이가 잘 크고 있는지, 내가 잘하고 있는지 걱정되지요. 그 걱정은 아이를 아끼는 마음에서 와요.",
+      "아직 일어나지 않은 일까지 다 끌어안지 않아도 돼요. 지금 이 순간, 지금 할 수 있는 한 가지만 생각해 봐요."
+    ],
+    "서운함": [
+      "나는 이렇게 애쓰는데 아무도 알아주지 않는 것 같아 서운했지요. 그 마음, 충분히 그럴 만해요.",
+      "'고마워' 한마디가 듣고 싶었던 거예요. 오늘은 내가 먼저 나에게 말해 줘요. 정말 수고했어."
+    ],
+    "말이 안 통함": [
+      "몇 번을 말해도 듣지 않으면 벽에 대고 말하는 것 같지요. 답답한 게 당연해요.",
+      "통하지 않는 건 내가 부족해서가 아니에요. 지금은 서로 들을 준비가 안 됐을 뿐이에요. 조금 뒤에 다시 이야기해도 괜찮아요."
+    ],
+    "화": [
+      "화가 나는 건 잘못이 아니에요. 소중한 게 지켜지지 않았다는 신호예요. 다만 지금은 말보다 숨이 먼저예요.",
+      "지금 소리치고 싶은 마음, 그만큼 힘들었다는 뜻이에요. 열을 세는 동안만 입을 꼭 다물어 볼까요?"
+    ],
+    "짜증": [
+      "작은 일에도 짜증이 나는 날이 있어요. 그건 마음의 그릇이 이미 가득 찼다는 뜻이에요.",
+      "짜증 난 나를 탓하지 않아도 돼요. 물 한 잔 마시고, 어깨에 힘을 한 번만 빼 볼까요?"
+    ]
+  };
+
+  // ---------- 3. 생각 꺼내기 질문 ----------
+  var QUESTIONS = [
+    {
+      q: "방금 무슨 일이 있었나요?",
+      hint: "판단은 잠시 내려놓고, 일어난 일만 사실대로 적어 봐요.",
+      ph: "예) 저녁 먹자고 세 번 불렀는데 아이가 게임만 하고 대답이 없었다."
+    },
+    {
+      q: "그때 내 마음 깊은 곳에는 무엇이 있었나요?",
+      hint: "화 아래에 숨은 마음을 찾아봐요. 지침, 걱정, 서운함일 수도 있어요.",
+      ph: "예) 사실은 너무 지쳐 있었고, 내 말이 무시당하는 것 같아 서운했다."
+    },
+    {
+      q: "소리 대신 건넬 수 있는 한마디는 무엇일까요?",
+      hint: "내 마음과 바라는 것을 짧게 담아 봐요. 이 말로 대화를 먼저 건네 볼 수 있어요.",
+      ph: "예) 엄마가 세 번 불러서 속상했어. 이 판 끝나면 바로 식탁으로 와 줄래?"
+    }
+  ];
+
+  var TOPICS = ["숙제·공부", "게임·휴대폰", "아침 준비", "잠자리", "정리정돈", "형제 다툼", "말대꾸·말투", "배우자와 집안일", "기타"];
+  var REPEAT_LIMIT = 3; // 이 횟수를 넘으면 알림
+  var KEY = "maum-gorigi-records-v1";
+
+  // ---------- 공통 ----------
+  var $ = function (id) { return document.getElementById(id); };
+  var state = { mood: null, answers: ["", "", ""], qi: 0, topic: null };
+
+  function show(n) {
+    for (var i = 1; i <= 4; i++) $("step" + i).classList.toggle("hidden", i !== n);
+    document.querySelectorAll(".steps li").forEach(function (li) {
+      li.classList.toggle("on", Number(li.dataset.go) === n);
+    });
+    if (n !== 2) stopBreath();
+    if (n === 3) renderQ();
+    if (n === 4) prefillRecord();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll(".steps li").forEach(function (li) {
+    li.addEventListener("click", function () { show(Number(li.dataset.go)); });
+  });
+
+  function chip(label, onPick) {
+    var b = document.createElement("button");
+    b.className = "chip"; b.type = "button"; b.textContent = label;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", function () {
+      b.parentNode.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      onPick(label);
+    });
+    return b;
+  }
+
+  // ---------- 1단계 ----------
+  Object.keys(MOODS).forEach(function (m) {
+    $("moods").appendChild(chip(m, function (mood) {
+      state.mood = mood;
+      var list = MOODS[mood];
+      var box = $("comfort");
+      box.textContent = list[Math.floor(Math.random() * list.length)];
+      box.classList.remove("hidden");
+      $("to2").disabled = false;
+    }));
+  });
+  $("to2").addEventListener("click", function () { show(2); });
+  $("quick").addEventListener("click", function () { show(2); startBreath(); });
+
+  // ---------- 2단계: 4초 들이쉬기 · 6초 내쉬기 × 4번 ----------
+  var IN = 4, OUT = 6, ROUNDS = 4;
+  var timers = [];
+  var circle = $("circle");
+
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function stopBreath() {
+    timers.forEach(clearTimeout); timers = [];
+    circle.style.transitionDuration = "0.6s";
+    circle.style.transform = "scale(.45)";
+    $("sec").textContent = "";
+    $("bstart").disabled = false;
+  }
+  function countdown(seconds) {
+    for (var s = 0; s < seconds; s++) {
+      (function (left) { later(function () { $("sec").textContent = left; }, (seconds - left) * 1000); })(seconds - s);
+    }
+  }
+  function startBreath() {
+    stopBreath();
+    $("bstart").disabled = true;
+    $("bstart").textContent = "다시 하기";
+    $("to3").classList.add("hidden");
+    $("bcount").textContent = "0 / " + ROUNDS + "번";
+    var t = 300;
+    for (var r = 1; r <= ROUNDS; r++) {
+      (function (round, start) {
+        later(function () {
+          $("bword").textContent = "코로 들이쉬어요";
+          $("bcount").textContent = round + " / " + ROUNDS + "번";
+          circle.style.transitionDuration = IN + "s";
+          circle.style.transform = "scale(1)";
+          countdown(IN);
+        }, start);
+        later(function () {
+          $("bword").textContent = "입으로 길게 내쉬어요";
+          circle.style.transitionDuration = OUT + "s";
+          circle.style.transform = "scale(.45)";
+          countdown(OUT);
+        }, start + IN * 1000);
+      })(r, t);
+      t += (IN + OUT) * 1000;
+    }
+    later(function () {
+      $("sec").textContent = "";
+      $("bword").textContent = "잘했어요. 몸이 조금 가벼워졌나요?";
+      $("bstart").disabled = false;
+      $("to3").classList.remove("hidden");
+    }, t);
+  }
+  $("bstart").addEventListener("click", startBreath);
+  $("to3").addEventListener("click", function () { show(3); });
+
+  // ---------- 3단계: 질문 3개를 차례로 ----------
+  function renderQ() {
+    var done = state.qi >= QUESTIONS.length;
+    $("qbox").classList.toggle("hidden", done);
+    $("qdone").classList.toggle("hidden", !done);
+    if (done) { renderSummary(); return; }
+    var item = QUESTIONS[state.qi];
+    $("qprog").textContent = "질문 " + (state.qi + 1) + " / " + QUESTIONS.length;
+    $("qtext").textContent = item.q;
+    $("qhint").textContent = item.hint;
+    $("qans").placeholder = item.ph;
+    $("qans").value = state.answers[state.qi];
+    $("qprev").disabled = state.qi === 0;
+    $("qnext").textContent = state.qi === QUESTIONS.length - 1 ? "정리하기" : "다음";
+    updateNext();
+  }
+  function updateNext() { $("qnext").disabled = !$("qans").value.trim(); }
+  function renderSummary() {
+    var dl = $("qsum"); dl.innerHTML = "";
+    var labels = ["있었던 일", "내 진짜 마음", "건넬 한마디"];
+    QUESTIONS.forEach(function (_, i) {
+      var dt = document.createElement("dt"); dt.textContent = labels[i];
+      var dd = document.createElement("dd"); dd.textContent = state.answers[i];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+  }
+  $("qans").addEventListener("input", function () {
+    state.answers[state.qi] = $("qans").value; updateNext();
+  });
+  $("qnext").addEventListener("click", function () {
+    state.answers[state.qi] = $("qans").value.trim();
+    state.qi++; renderQ();
+    if (state.qi < QUESTIONS.length) $("qans").focus();
+  });
+  $("qprev").addEventListener("click", function () { if (state.qi > 0) { state.qi--; renderQ(); } });
+  $("qredo").addEventListener("click", function () { state.qi = 0; renderQ(); });
+  $("to4").addEventListener("click", function () { show(4); });
+
+  // ---------- 4단계: 기록 (이 기기 localStorage에만) ----------
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
+  }
+  function save(list) {
+    try { localStorage.setItem(KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+
+  TOPICS.forEach(function (t) {
+    $("topics").appendChild(chip(t, function (topic) {
+      state.topic = topic;
+      $("rtopicEtc").classList.toggle("hidden", topic !== "기타");
+      if (topic === "기타") $("rtopicEtc").focus();
+    }));
+  });
+
+  function prefillRecord() {
+    if (!$("rwhat").value && state.answers[0]) $("rwhat").value = state.answers[0];
+    if (!$("rsay").value && state.answers[2]) $("rsay").value = state.answers[2];
+    renderRecords();
+  }
+
+  function topicOf() {
+    if (state.topic === "기타") return $("rtopicEtc").value.trim() || "기타";
+    return state.topic;
+  }
+
+  $("rsave").addEventListener("click", function () {
+    var topic = topicOf();
+    var what = $("rwhat").value.trim();
+    if (!topic) { $("rmsg").textContent = "어떤 일이었는지 주제를 하나 골라 주세요."; return; }
+    if (!what) { $("rmsg").textContent = "무슨 일이 있었는지 한 줄만 적어 볼까요?"; $("rwhat").focus(); return; }
+    var list = load();
+    list.unshift({
+      id: Date.now(),
+      date: new Date().toISOString(),
+      mood: state.mood || "",
+      topic: topic,
+      what: what,
+      feel: state.answers[1] || "",
+      say: $("rsay").value.trim()
+    });
+    if (!save(list)) { $("rmsg").textContent = "이 기기에 저장하지 못했어요. 브라우저의 저장 설정을 확인해 주세요."; return; }
+    $("rmsg").textContent = "기록했어요. 오늘도 마음을 들여다본 나, 참 잘했어요.";
+    $("rwhat").value = ""; $("rsay").value = ""; $("rtopicEtc").value = "";
+    state.topic = null; state.mood = null; state.answers = ["", "", ""]; state.qi = 0;
+    $("topics").querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+    $("moods").querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", "false"); });
+    $("comfort").classList.add("hidden"); $("to2").disabled = true;
+    $("rtopicEtc").classList.add("hidden");
+    renderRecords();
+    $("alerts").scrollIntoView({ behavior: "smooth" });
+  });
+
+  function fmt(iso) {
+    var d = new Date(iso);
+    return (d.getMonth() + 1) + "월 " + d.getDate() + "일 " +
+      String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+
+  function renderRecords() {
+    var list = load();
+
+    // 주제별 횟수 세기
+    var counts = {};
+    list.forEach(function (r) { counts[r.topic] = (counts[r.topic] || 0) + 1; });
+    var cbox = $("counts"); cbox.innerHTML = "";
+    var names = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+    if (!names.length) cbox.innerHTML = '<span class="muted">아직 기록이 없어요.</span>';
+    names.forEach(function (n) {
+      var s = document.createElement("span");
+      s.className = "count-pill" + (counts[n] > REPEAT_LIMIT ? " hot" : "");
+      s.textContent = n + " " + counts[n] + "번";
+      cbox.appendChild(s);
+    });
+
+    // 3번을 넘은 주제 알려 주기
+    var abox = $("alerts"); abox.innerHTML = "";
+    names.filter(function (n) { return counts[n] > REPEAT_LIMIT; }).forEach(function (n) {
+      var lastSay = "";
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].topic === n && list[i].say) { lastSay = list[i].say; break; }
+      }
+      var div = document.createElement("div");
+      div.className = "alert"; div.setAttribute("role", "status");
+      var st = document.createElement("strong");
+      st.textContent = "‘" + n + "’ 일이 벌써 " + counts[n] + "번째예요";
+      var p = document.createElement("div");
+      p.textContent = "같은 장면이 되풀이되고 있어요. 엄마 탓이 아니라, 미리 약속이 필요하다는 신호예요. " +
+        "마음이 차분한 시간에 가족과 이 일에 대해 먼저 이야기를 건네 볼까요?";
+      div.appendChild(st); div.appendChild(p);
+      if (lastSay) {
+        var q = document.createElement("div");
+        q.style.marginTop = "8px";
+        q.textContent = "지난번에 고른 한마디: “" + lastSay + "”";
+        div.appendChild(q);
+      }
+      abox.appendChild(div);
+    });
+
+    // 목록
+    var lbox = $("list"); lbox.innerHTML = "";
+    if (!list.length) lbox.innerHTML = '<p class="muted">첫 기록을 남기면 여기에 쌓여요.</p>';
+    list.forEach(function (r) {
+      var el = document.createElement("div"); el.className = "rec";
+      var meta = document.createElement("div"); meta.className = "meta";
+      meta.textContent = fmt(r.date) + (r.mood ? " · " + r.mood : "");
+      var tp = document.createElement("div"); tp.className = "topic"; tp.textContent = r.topic;
+      var wh = document.createElement("div"); wh.textContent = r.what;
+      el.appendChild(meta); el.appendChild(tp); el.appendChild(wh);
+      if (r.say) {
+        var sy = document.createElement("div"); sy.className = "say"; sy.textContent = "“" + r.say + "”";
+        el.appendChild(sy);
+      }
+      var del = document.createElement("button"); del.className = "del"; del.type = "button";
+      del.textContent = "이 기록 지우기";
+      del.addEventListener("click", function () {
+        if (!confirm("이 기록을 지울까요?")) return;
+        save(load().filter(function (x) { return x.id !== r.id; }));
+        renderRecords();
+      });
+      el.appendChild(del);
+      lbox.appendChild(el);
+    });
+    $("rclear").classList.toggle("hidden", !list.length);
+  }
+
+  $("rclear").addEventListener("click", function () {
+    if (!confirm("모든 기록을 지울까요? 지운 기록은 되돌릴 수 없어요.")) return;
+    save([]); renderRecords();
+  });
+  $("restart").addEventListener("click", function () { show(1); });
+
+  show(1);
+})();
+</script>
+</body>
+</html>
