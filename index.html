@@ -251,7 +251,7 @@
 
       <div class="card">
         <h2>되풀이되는 주제</h2>
-        <p class="muted">같은 주제가 3번을 넘으면 알려 드릴게요.</p>
+        <p class="muted">같은 주제가 3번째가 되면 알려 드릴게요.</p>
         <div class="counts" id="counts"></div>
       </div>
 
@@ -327,7 +327,7 @@
   ];
 
   var TOPICS = ["숙제·공부", "게임·휴대폰", "아침 준비", "잠자리", "정리정돈", "형제 다툼", "말대꾸·말투", "배우자와 집안일", "기타"];
-  var REPEAT_LIMIT = 3; // 이 횟수를 넘으면 알림
+  var REPEAT_LIMIT = 3; // 이 횟수가 되면 알림
   var KEY = "maum-gorigi-records-v1";
 
   // ---------- 공통 ----------
@@ -536,14 +536,14 @@
     if (!names.length) cbox.innerHTML = '<span class="muted">아직 기록이 없어요.</span>';
     names.forEach(function (n) {
       var s = document.createElement("span");
-      s.className = "count-pill" + (counts[n] > REPEAT_LIMIT ? " hot" : "");
+      s.className = "count-pill" + (counts[n] >= REPEAT_LIMIT ? " hot" : "");
       s.textContent = n + " " + counts[n] + "번";
       cbox.appendChild(s);
     });
 
-    // 3번을 넘은 주제 알려 주기
+    // 3번째가 된 주제 알려 주기
     var abox = $("alerts"); abox.innerHTML = "";
-    names.filter(function (n) { return counts[n] > REPEAT_LIMIT; }).forEach(function (n) {
+    names.filter(function (n) { return counts[n] >= REPEAT_LIMIT; }).forEach(function (n) {
       var lastSay = "";
       for (var i = 0; i < list.length; i++) {
         if (list[i].topic === n && list[i].say) { lastSay = list[i].say; break; }
