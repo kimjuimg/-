@@ -3,29 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2d473a">
+<meta name="theme-color" content="#b48a5f">
 <title>우리 집 1인 1역</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap">
 <style>
-  /* 교실 칠판: 나무 틀 안의 초록 칠판 한 장, 가족마다 다른 분필 색 카드 */
+  /* 코르크 게시판: 나무 틀 안의 따뜻한 코르크판, 가족마다 압정 색이 다른 종이 카드 */
   :root {
-    color-scheme: dark;
-    --frame: #6e4b2c;
-    --frame-dark: #533720;
-    --board: #2d473a;
-    --board-hi: #36564a;
-    --chalk: #f2f0e6;
-    --chalk-dim: #b8c6bc;
-    --chalk-faint: rgba(242, 240, 230, 0.28);
-    --yellow: #f5df7a;
-    --pink: #f3a8c2;
-    --sky: #93d2f2;
-    --mint: #aee4a6;
-    --orange: #f6b26d;
-    --lilac: #cdb8f3;
-    --on-chalk: #22382d;
+    color-scheme: light;
+    --frame: #b48a5f;
+    --frame-dark: #9c7550;
+    --cork: #dcc39b;
+    --cork-dot: #c9ab7e;
+    --paper: #fffaf0;
+    --paper-line: #eadfca;
+    --ink: #4b3a2c;
+    --ink-soft: #7a6553;
+    --button: #7d9a7e;
+    --on-button: #fffaf0;
+    --yellow: #c79a3a;
+    --pink: #c77b93;
+    --sky: #5b93b5;
+    --mint: #6c9c6c;
+    --orange: #c98551;
+    --lilac: #8f7bbf;
     --hand: "Gaegu", "Nanum Pen Script", "Apple SD Gothic Neo", "Malgun Gothic", cursive;
     --read: "Gowun Dodum", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   }
@@ -36,7 +38,7 @@
     margin: 0;
     background: var(--frame);
     background-image: repeating-linear-gradient(92deg, var(--frame) 0 14px, var(--frame-dark) 14px 16px, var(--frame) 16px 31px);
-    color: var(--chalk);
+    color: var(--ink);
     font-family: var(--read);
     font-size: 20px;
     line-height: 1.6;
@@ -46,114 +48,124 @@
   .board {
     max-width: 560px; margin: 0 auto;
     min-height: calc(100vh - 20px);
-    background:
-      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,.06), transparent 55%),
-      radial-gradient(ellipse at 80% 70%, rgba(255,255,255,.04), transparent 50%),
-      var(--board);
+    background-color: var(--cork);
+    background-image:
+      radial-gradient(var(--cork-dot) 1.2px, transparent 1.6px),
+      radial-gradient(var(--cork-dot) 1px, transparent 1.4px);
+    background-size: 13px 13px, 19px 19px;
+    background-position: 0 0, 7px 9px;
     border-radius: 6px;
-    box-shadow: inset 0 0 0 4px var(--frame-dark), inset 0 0 40px rgba(0,0,0,.35);
+    box-shadow: inset 0 0 0 4px var(--frame-dark), inset 0 0 30px rgba(90, 60, 30, .25);
     padding-block: 22px 28px; padding-inline: 16px;
     display: flex; flex-direction: column; gap: 22px;
   }
   h1, h2, .name, .hand { font-family: var(--hand); font-weight: 700; text-wrap: balance; }
   h1 { font-size: 44px; line-height: 1.1; margin: 0; letter-spacing: -0.5px; }
-  .date { font-family: var(--hand); font-size: 22px; color: var(--chalk-dim); }
+  .date { font-family: var(--hand); font-size: 22px; color: var(--ink-soft); }
   h2 { font-size: 30px; margin: 0; line-height: 1.2; }
   .step { display: flex; flex-direction: column; gap: 12px; }
-  .step-no {
-    font-family: var(--hand); font-size: 20px; color: var(--yellow);
-    letter-spacing: 1px;
-  }
-  .hint { color: var(--chalk-dim); margin: 0; font-size: 18px; }
-  hr.chalk { border: none; border-top: 2px dashed var(--chalk-faint); margin: 0; width: 100%; }
+  .step-no { font-family: var(--hand); font-size: 21px; color: var(--ink-soft); font-weight: 700; letter-spacing: 1px; }
+  .hint { color: var(--ink-soft); margin: 0; font-size: 18px; }
+  hr.chalk { border: none; border-top: 2px dashed var(--frame); margin: 0; width: 100%; opacity: .6; }
 
   /* 입력과 버튼 */
   .add-row { display: flex; gap: 8px; }
   .add-row input { flex: 1; min-width: 0; }
   input[type="text"] {
-    font: inherit; font-size: 20px; color: var(--chalk);
-    background: rgba(0,0,0,.18); border: 2px solid var(--chalk-faint);
+    font: inherit; font-size: 20px; color: var(--ink);
+    background: var(--paper); border: 2px solid var(--paper-line);
     border-radius: 10px; padding: 12px 14px; min-height: 56px; width: 100%;
   }
-  input::placeholder { color: var(--chalk-dim); opacity: .75; }
+  input::placeholder { color: var(--ink-soft); opacity: .7; }
   button { font: inherit; cursor: pointer; }
   .btn {
     min-height: 56px; padding: 8px 18px; border-radius: 10px;
     font-family: var(--hand); font-size: 24px; font-weight: 700;
-    background: var(--yellow); color: var(--on-chalk); border: none;
-    white-space: nowrap;
+    background: var(--button); color: var(--on-button); border: none;
+    white-space: nowrap; box-shadow: 0 2px 0 rgba(75, 58, 44, .25);
   }
-  .btn.line { background: transparent; color: var(--chalk); border: 2px solid var(--chalk-faint); }
+  .btn.line { background: var(--paper); color: var(--ink); border: 2px solid var(--paper-line); }
   .btn.small { min-height: 44px; font-size: 20px; padding: 4px 12px; }
   .btn.wide { width: 100%; }
-  :focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--button); outline-offset: 2px; }
+
+  /* 종이 메모 공통: 압정 하나로 꽂은 모양 */
+  .paper {
+    position: relative;
+    background: var(--paper); border-radius: 4px;
+    box-shadow: 0 3px 8px rgba(75, 58, 44, .22);
+  }
+  .paper::before {
+    content: ""; position: absolute; top: -8px; left: 50%; margin-left: -9px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7), transparent 45%), var(--c, var(--button));
+    box-shadow: 0 2px 3px rgba(75, 58, 44, .35);
+  }
 
   /* 전체 진행 */
   .progress-wrap { display: flex; flex-direction: column; gap: 6px; }
-  .progress-text { font-family: var(--hand); font-size: 26px; }
-  .bar { height: 16px; border-radius: 8px; border: 2px solid var(--chalk-faint); overflow: hidden; }
-  .bar > i { display: block; height: 100%; width: 0; background: var(--chalk); transition: width .4s ease; }
+  .progress-text { font-family: var(--hand); font-size: 26px; font-weight: 700; }
+  .bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--paper-line); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--button); transition: width .4s ease; }
 
   /* 분리수거 당번 */
-  .duty {
-    border: 2px dashed var(--chalk); border-radius: 12px; padding: 16px;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .duty .who { font-family: var(--hand); font-size: 34px; line-height: 1.2; }
-  .duty .order { display: flex; flex-wrap: wrap; gap: 6px; font-size: 17px; color: var(--chalk-dim); }
-  .duty .order span.now { color: var(--chalk); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+  .duty { padding: 18px 16px 16px; display: flex; flex-direction: column; gap: 10px; transform: rotate(-.6deg); }
+  .duty .who { font-family: var(--hand); font-size: 34px; line-height: 1.2; font-weight: 700; }
+  .duty .order { display: flex; flex-wrap: wrap; gap: 6px; font-size: 17px; color: var(--ink-soft); }
+  .duty .order span.now { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
 
   /* 사람 카드 */
-  .cards { display: flex; flex-direction: column; gap: 18px; }
+  .cards { display: flex; flex-direction: column; gap: 22px; }
   .card {
     --c: var(--yellow);
-    border: 3px solid var(--c); border-radius: 14px;
-    padding: 16px; display: flex; flex-direction: column; gap: 12px;
-    background: rgba(255,255,255,.035);
+    border-top: 6px solid var(--c);
+    padding: 18px 16px 12px; display: flex; flex-direction: column; gap: 12px;
   }
+  .card:nth-child(odd) { transform: rotate(.4deg); }
+  .card:nth-child(even) { transform: rotate(-.4deg); }
   .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
   .name { font-size: 38px; color: var(--c); line-height: 1.1; }
-  .count { font-family: var(--hand); font-size: 22px; color: var(--chalk-dim); }
+  .count { font-family: var(--hand); font-size: 22px; color: var(--ink-soft); }
   .card .bar > i { background: var(--c); }
   .tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-  .task { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px dashed var(--chalk-faint); }
+  .task { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px dashed var(--paper-line); }
   .task label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 0; }
   .task input[type="checkbox"] {
     appearance: none; -webkit-appearance: none; margin: 0; flex: none;
     width: 34px; height: 34px; border: 3px solid var(--c); border-radius: 8px;
-    display: grid; place-content: center; cursor: pointer; background: transparent;
+    display: grid; place-content: center; cursor: pointer; background: var(--paper);
   }
-  .task input[type="checkbox"]::after { content: "✓"; font-size: 26px; font-weight: 700; color: var(--board); line-height: 1; transform: scale(0); }
+  .task input[type="checkbox"]::after { content: "✓"; font-size: 26px; font-weight: 700; color: var(--paper); line-height: 1; transform: scale(0); }
   .task input[type="checkbox"]:checked { background: var(--c); }
   .task input[type="checkbox"]:checked::after { transform: scale(1); }
   .task .t { display: flex; flex-direction: column; min-width: 0; }
   .task .t span { overflow-wrap: anywhere; }
-  .task.done .t span { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--c); color: var(--chalk-dim); }
-  .task .when { font-size: 15px; color: var(--c); }
+  .task.done .t span { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--c); color: var(--ink-soft); }
+  .task .when { font-size: 15px; color: var(--c); font-weight: 700; }
   .x {
     flex: none; width: 44px; height: 44px; border-radius: 50%;
-    border: 2px solid var(--chalk-faint); background: transparent; color: var(--chalk-dim); font-size: 22px; line-height: 1;
+    border: 2px solid var(--paper-line); background: var(--paper); color: var(--ink-soft); font-size: 22px; line-height: 1;
   }
-  .empty-tasks { color: var(--chalk-dim); font-size: 18px; margin: 0; }
+  .empty-tasks { color: var(--ink-soft); font-size: 18px; margin: 0; }
 
   /* 스티커 */
   .stickers { display: flex; flex-direction: column; gap: 6px; }
-  .stickers .lbl { font-family: var(--hand); font-size: 22px; }
+  .stickers .lbl { font-family: var(--hand); font-size: 22px; font-weight: 700; }
   .slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; }
   .slot {
     aspect-ratio: 1; max-width: 100%; border-radius: 50%;
-    border: 2px dashed var(--chalk-faint);
+    border: 2px dashed var(--paper-line);
     display: grid; place-content: center; font-size: 20px; line-height: 1;
   }
-  .slot.on { border: 2px solid var(--c); background: var(--c); color: var(--board); }
+  .slot.on { border: 2px solid var(--c); background: var(--c); color: var(--paper); }
   .slot.pop { animation: pop .5s ease; }
   @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
 
   .card-foot { display: flex; justify-content: flex-end; }
-  .del-person { background: none; border: none; color: var(--chalk-dim); font-size: 16px; text-decoration: underline; padding: 8px 0; min-height: 44px; }
+  .del-person { background: none; border: none; color: var(--ink-soft); font-size: 16px; text-decoration: underline; padding: 8px 0; min-height: 44px; }
 
   /* 처음 화면 */
-  .welcome { border: 2px dashed var(--chalk-faint); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .welcome { padding: 20px 18px 18px; display: flex; flex-direction: column; gap: 10px; transform: rotate(.5deg); }
 
   /* 칭찬 한마디 */
   .cheer {
@@ -163,17 +175,16 @@
   }
   .cheer-box {
     width: 100%; max-width: 540px;
-    background: var(--chalk); color: var(--on-chalk);
-    border-radius: 14px; padding: 18px; box-shadow: 0 8px 30px rgba(0,0,0,.45);
+    padding: 22px 18px 18px; box-shadow: 0 8px 30px rgba(75, 58, 44, .4);
     display: flex; flex-direction: column; gap: 10px;
     animation: rise .35s ease;
   }
   .cheer-box p { margin: 0; font-family: var(--hand); font-size: 28px; line-height: 1.3; font-weight: 700; }
   .cheer-box p + p { font-size: 24px; }
-  .cheer-box .btn { background: var(--board); color: var(--chalk); align-self: stretch; }
+  .cheer-box .btn { align-self: stretch; }
   @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
 
-  footer.note { color: var(--chalk-dim); font-size: 16px; text-align: center; }
+  footer.note { color: var(--ink); font-size: 16px; text-align: center; }
 
   @media (prefers-reduced-motion: reduce) {
     .slot.pop, .cheer-box { animation: none; }
@@ -187,7 +198,7 @@
   <header>
     <div class="date" id="today"></div>
     <h1>우리 집 1인 1역</h1>
-    <p class="hint">누가 무엇을 하는지 칠판에 다 같이 적어요. 다 하면 내가 직접 체크해요!</p>
+    <p class="hint">누가 무엇을 하는지 게시판에 다 같이 붙여요. 다 하면 내가 직접 체크해요!</p>
   </header>
 
   <!-- 1. 사람 등록하기 -->
@@ -201,8 +212,8 @@
     <p class="hint" id="personMsg" aria-live="polite">이름을 쓰면 사람마다 다른 색 카드가 생겨요.</p>
   </section>
 
-  <div class="welcome" id="welcome">
-    <p class="hand" style="font-size:26px;margin:0">아직 칠판이 비어 있어요.</p>
+  <div class="welcome paper" id="welcome">
+    <p class="hand" style="font-size:26px;margin:0">아직 게시판이 비어 있어요.</p>
     <p class="hint">가족이 다 같이 모여서 이름을 하나씩 써 보세요. 어떻게 생겼는지 먼저 보고 싶으면 아래 버튼을 눌러요.</p>
     <button class="btn line wide" id="sample" type="button">예시 가족으로 채워 보기</button>
   </div>
@@ -218,7 +229,7 @@
   </section>
 
   <!-- 분리수거 당번 -->
-  <section class="duty" id="duty" hidden aria-labelledby="dutyWho">
+  <section class="duty paper" id="duty" hidden aria-labelledby="dutyWho">
     <div class="step-no">분리수거 당번 · 돌아가면서 해요</div>
     <div class="who" id="dutyWho"></div>
     <div class="order" id="dutyOrder"></div>
@@ -252,7 +263,7 @@
 </div>
 
 <div class="cheer" id="cheer" hidden role="status" aria-live="polite">
-  <div class="cheer-box">
+  <div class="cheer-box paper">
     <div id="cheerText"></div>
     <button class="btn" id="cheerClose" type="button">좋아!</button>
   </div>
@@ -318,7 +329,7 @@
     var name = $("personName").value.trim();
     if (!name) { $("personMsg").textContent = "이름을 먼저 써 주세요."; return; }
     if (state.people.some(function (p) { return p.name === name; })) {
-      $("personMsg").textContent = "‘" + name + "’은(는) 벌써 칠판에 있어요."; return;
+      $("personMsg").textContent = "‘" + name + "’은(는) 벌써 게시판에 있어요."; return;
     }
     addPerson(name);
     $("personName").value = "";
@@ -457,7 +468,7 @@
     // 카드
     var wrap = $("cards"); wrap.innerHTML = "";
     state.people.forEach(function (p) {
-      var card = el("article", "card");
+      var card = el("article", "card paper");
       card.style.setProperty("--c", "var(" + p.color + ")");
 
       var head = el("div", "card-head");
