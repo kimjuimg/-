@@ -3,32 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#b48a5f">
+<meta name="theme-color" content="#fff6ec">
 <title>우리 집 1인 1역</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
 <style>
-  /* 코르크 게시판: 나무 틀 안의 따뜻한 코르크판, 가족마다 압정 색이 다른 종이 카드 */
+  /* 밝고 귀엽게: 땡땡이 무늬 바탕 위에 동글동글한 흰 카드, 사람마다 다른 사탕 색 */
   :root {
     color-scheme: light;
-    --frame: #b48a5f;
-    --frame-dark: #9c7550;
-    --cork: #dcc39b;
-    --cork-dot: #c9ab7e;
-    --paper: #fffaf0;
-    --paper-line: #eadfca;
-    --ink: #4b3a2c;
-    --ink-soft: #7a6553;
-    --button: #7d9a7e;
-    --on-button: #fffaf0;
-    --yellow: #c79a3a;
-    --pink: #c77b93;
-    --sky: #5b93b5;
-    --mint: #6c9c6c;
-    --orange: #c98551;
-    --lilac: #8f7bbf;
-    --hand: "Gaegu", "Nanum Pen Script", "Apple SD Gothic Neo", "Malgun Gothic", cursive;
+    --bg: #fff6ec;
+    --dot-a: #ffd9de;
+    --dot-b: #ffeaa6;
+    --card: #ffffff;
+    --line: #f1e3d6;
+    --ink: #4a3b47;
+    --ink-soft: #85727f;
+    --button: #e8606b;
+    --on-button: #ffffff;
+    --duty-bg: #fff3c4;
+    --yellow: #e9b31e;  --yellow-soft: #fff3c4;
+    --pink: #ef6f8e;    --pink-soft: #ffe1e8;
+    --sky: #3fa7e0;     --sky-soft: #dcf0fc;
+    --mint: #45b26b;    --mint-soft: #dcf5e3;
+    --orange: #f28a2e;  --orange-soft: #ffe6cf;
+    --lilac: #9a78e0;   --lilac-soft: #ece4fd;
+    --cute: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
     --read: "Gowun Dodum", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
   }
   * { box-sizing: border-box; }
@@ -36,136 +36,136 @@
   html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: var(--frame);
-    background-image: repeating-linear-gradient(92deg, var(--frame) 0 14px, var(--frame-dark) 14px 16px, var(--frame) 16px 31px);
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(var(--dot-a) 4px, transparent 4.5px),
+      radial-gradient(var(--dot-b) 4px, transparent 4.5px);
+    background-size: 44px 44px;
+    background-position: 0 0, 22px 22px;
     color: var(--ink);
     font-family: var(--read);
     font-size: 20px;
     line-height: 1.6;
     word-break: keep-all;
-    padding: 10px;
   }
   .board {
     max-width: 560px; margin: 0 auto;
-    min-height: calc(100vh - 20px);
-    background-color: var(--cork);
-    background-image:
-      radial-gradient(var(--cork-dot) 1.2px, transparent 1.6px),
-      radial-gradient(var(--cork-dot) 1px, transparent 1.4px);
-    background-size: 13px 13px, 19px 19px;
-    background-position: 0 0, 7px 9px;
-    border-radius: 6px;
-    box-shadow: inset 0 0 0 4px var(--frame-dark), inset 0 0 30px rgba(90, 60, 30, .25);
-    padding-block: 22px 28px; padding-inline: 16px;
+    padding-block: 24px 120px; padding-inline: 16px;
     display: flex; flex-direction: column; gap: 22px;
   }
-  h1, h2, .name, .hand { font-family: var(--hand); font-weight: 700; text-wrap: balance; }
-  h1 { font-size: 44px; line-height: 1.1; margin: 0; letter-spacing: -0.5px; }
-  .date { font-family: var(--hand); font-size: 22px; color: var(--ink-soft); }
-  h2 { font-size: 30px; margin: 0; line-height: 1.2; }
+  h1, h2, .name, .hand { font-family: var(--cute); font-weight: 400; text-wrap: balance; }
+  header { text-align: center; display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  h1 { font-size: 42px; line-height: 1.15; margin: 0; color: var(--button); }
+  .date {
+    font-family: var(--cute); font-size: 19px; color: var(--ink);
+    background: var(--card); border-radius: 999px; padding: 2px 14px; box-shadow: 0 2px 0 var(--line);
+  }
+  h2 { font-size: 28px; margin: 0; line-height: 1.25; }
   .step { display: flex; flex-direction: column; gap: 12px; }
-  .step-no { font-family: var(--hand); font-size: 21px; color: var(--ink-soft); font-weight: 700; letter-spacing: 1px; }
+  .step-no {
+    align-self: flex-start; font-family: var(--cute); font-size: 18px;
+    background: var(--ink); color: var(--card); border-radius: 999px; padding: 2px 14px;
+  }
   .hint { color: var(--ink-soft); margin: 0; font-size: 18px; }
-  hr.chalk { border: none; border-top: 2px dashed var(--frame); margin: 0; width: 100%; opacity: .6; }
+  hr.chalk { display: none; }
 
   /* 입력과 버튼 */
   .add-row { display: flex; gap: 8px; }
   .add-row input { flex: 1; min-width: 0; }
   input[type="text"] {
     font: inherit; font-size: 20px; color: var(--ink);
-    background: var(--paper); border: 2px solid var(--paper-line);
-    border-radius: 10px; padding: 12px 14px; min-height: 56px; width: 100%;
+    background: var(--card); border: 3px solid var(--line);
+    border-radius: 18px; padding: 12px 16px; min-height: 58px; width: 100%;
   }
-  input::placeholder { color: var(--ink-soft); opacity: .7; }
+  input::placeholder { color: var(--ink-soft); opacity: .75; }
   button { font: inherit; cursor: pointer; }
   .btn {
-    min-height: 56px; padding: 8px 18px; border-radius: 10px;
-    font-family: var(--hand); font-size: 24px; font-weight: 700;
+    min-height: 58px; padding: 8px 20px; border-radius: 18px;
+    font-family: var(--cute); font-size: 23px;
     background: var(--button); color: var(--on-button); border: none;
-    white-space: nowrap; box-shadow: 0 2px 0 rgba(75, 58, 44, .25);
+    white-space: nowrap; box-shadow: 0 4px 0 rgba(74, 59, 71, .18);
   }
-  .btn.line { background: var(--paper); color: var(--ink); border: 2px solid var(--paper-line); }
-  .btn.small { min-height: 44px; font-size: 20px; padding: 4px 12px; }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(74, 59, 71, .18); }
+  .btn.line { background: var(--card); color: var(--ink); border: 3px solid var(--line); box-shadow: none; }
+  .btn.small { min-height: 46px; font-size: 20px; padding: 4px 14px; border-radius: 14px; }
   .btn.wide { width: 100%; }
-  :focus-visible { outline: 3px solid var(--button); outline-offset: 2px; }
+  :focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
 
-  /* 종이 메모 공통: 압정 하나로 꽂은 모양 */
-  .paper {
-    position: relative;
-    background: var(--paper); border-radius: 4px;
-    box-shadow: 0 3px 8px rgba(75, 58, 44, .22);
-  }
-  .paper::before {
-    content: ""; position: absolute; top: -8px; left: 50%; margin-left: -9px;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.7), transparent 45%), var(--c, var(--button));
-    box-shadow: 0 2px 3px rgba(75, 58, 44, .35);
-  }
+  .paper { background: var(--card); border-radius: 26px; box-shadow: 0 6px 0 var(--line); }
 
   /* 전체 진행 */
-  .progress-wrap { display: flex; flex-direction: column; gap: 6px; }
-  .progress-text { font-family: var(--hand); font-size: 26px; font-weight: 700; }
-  .bar { height: 16px; border-radius: 8px; background: var(--paper); border: 2px solid var(--paper-line); overflow: hidden; }
-  .bar > i { display: block; height: 100%; width: 0; background: var(--button); transition: width .4s ease; }
+  #progressSec { background: var(--card); border-radius: 26px; padding: 16px 18px; box-shadow: 0 6px 0 var(--line); }
+  .progress-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .progress-text { font-family: var(--cute); font-size: 26px; }
+  .bar { height: 18px; border-radius: 999px; background: var(--bg); overflow: hidden; }
+  .bar > i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--button); transition: width .4s ease; }
 
   /* 분리수거 당번 */
-  .duty { padding: 18px 16px 16px; display: flex; flex-direction: column; gap: 10px; transform: rotate(-.6deg); }
-  .duty .who { font-family: var(--hand); font-size: 34px; line-height: 1.2; font-weight: 700; }
+  .duty.paper { background: var(--duty-bg); border: 3px dashed var(--yellow); box-shadow: none; }
+  .duty { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+  .duty .who { font-family: var(--cute); font-size: 32px; line-height: 1.2; }
   .duty .order { display: flex; flex-wrap: wrap; gap: 6px; font-size: 17px; color: var(--ink-soft); }
-  .duty .order span.now { color: var(--ink); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+  .duty .order span.now { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--yellow); text-decoration-thickness: 3px; text-underline-offset: 4px; }
 
   /* 사람 카드 */
-  .cards { display: flex; flex-direction: column; gap: 22px; }
+  .cards { display: flex; flex-direction: column; gap: 20px; }
   .card {
-    --c: var(--yellow);
-    border-top: 6px solid var(--c);
-    padding: 18px 16px 12px; display: flex; flex-direction: column; gap: 12px;
+    --c: var(--yellow); --c-soft: var(--yellow-soft);
+    overflow: hidden; display: flex; flex-direction: column; gap: 12px;
+    padding: 0 16px 12px;
+    border: 3px solid var(--c-soft);
   }
-  .card:nth-child(odd) { transform: rotate(.4deg); }
-  .card:nth-child(even) { transform: rotate(-.4deg); }
-  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-  .name { font-size: 38px; color: var(--c); line-height: 1.1; }
-  .count { font-family: var(--hand); font-size: 22px; color: var(--ink-soft); }
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    background: var(--c-soft); margin-inline: -16px; padding: 12px 16px;
+  }
+  .name { font-size: 34px; line-height: 1.1; display: flex; align-items: center; gap: 10px; }
+  .name::before {
+    content: ""; width: 22px; height: 22px; border-radius: 50%; background: var(--c);
+    box-shadow: inset -3px -3px 0 rgba(0,0,0,.12);
+  }
+  .count { font-family: var(--cute); font-size: 20px; color: var(--ink); }
+  .card .bar { background: var(--c-soft); }
   .card .bar > i { background: var(--c); }
   .tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-  .task { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px dashed var(--paper-line); }
+  .task { display: flex; align-items: center; gap: 12px; min-height: 58px; border-bottom: 2px dotted var(--line); }
   .task label { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 0; }
   .task input[type="checkbox"] {
     appearance: none; -webkit-appearance: none; margin: 0; flex: none;
-    width: 34px; height: 34px; border: 3px solid var(--c); border-radius: 8px;
-    display: grid; place-content: center; cursor: pointer; background: var(--paper);
+    width: 36px; height: 36px; border: 3px solid var(--c); border-radius: 12px;
+    display: grid; place-content: center; cursor: pointer; background: var(--card);
   }
-  .task input[type="checkbox"]::after { content: "✓"; font-size: 26px; font-weight: 700; color: var(--paper); line-height: 1; transform: scale(0); }
+  .task input[type="checkbox"]::after { content: "✓"; font-size: 26px; font-weight: 700; color: var(--card); line-height: 1; transform: scale(0); transition: transform .15s ease; }
   .task input[type="checkbox"]:checked { background: var(--c); }
   .task input[type="checkbox"]:checked::after { transform: scale(1); }
   .task .t { display: flex; flex-direction: column; min-width: 0; }
   .task .t span { overflow-wrap: anywhere; }
   .task.done .t span { text-decoration: line-through; text-decoration-thickness: 3px; text-decoration-color: var(--c); color: var(--ink-soft); }
-  .task .when { font-size: 15px; color: var(--c); font-weight: 700; }
+  .task .when { font-size: 15px; color: var(--ink-soft); }
   .x {
     flex: none; width: 44px; height: 44px; border-radius: 50%;
-    border: 2px solid var(--paper-line); background: var(--paper); color: var(--ink-soft); font-size: 22px; line-height: 1;
+    border: none; background: var(--bg); color: var(--ink-soft); font-size: 22px; line-height: 1;
   }
   .empty-tasks { color: var(--ink-soft); font-size: 18px; margin: 0; }
 
   /* 스티커 */
-  .stickers { display: flex; flex-direction: column; gap: 6px; }
-  .stickers .lbl { font-family: var(--hand); font-size: 22px; font-weight: 700; }
+  .stickers { display: flex; flex-direction: column; gap: 6px; background: var(--bg); border-radius: 18px; padding: 12px; }
+  .stickers .lbl { font-family: var(--cute); font-size: 20px; }
   .slots { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 360px; }
   .slot {
     aspect-ratio: 1; max-width: 100%; border-radius: 50%;
-    border: 2px dashed var(--paper-line);
-    display: grid; place-content: center; font-size: 20px; line-height: 1;
+    border: 2px dashed var(--line); background: var(--card);
+    display: grid; place-content: center; font-size: 18px; line-height: 1;
   }
-  .slot.on { border: 2px solid var(--c); background: var(--c); color: var(--paper); }
+  .slot.on { border: 2px solid var(--c); background: var(--c); color: var(--card); }
   .slot.pop { animation: pop .5s ease; }
-  @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  @keyframes pop { 0% { transform: scale(.3) rotate(-30deg); } 70% { transform: scale(1.3) rotate(10deg); } 100% { transform: scale(1); } }
 
   .card-foot { display: flex; justify-content: flex-end; }
   .del-person { background: none; border: none; color: var(--ink-soft); font-size: 16px; text-decoration: underline; padding: 8px 0; min-height: 44px; }
 
   /* 처음 화면 */
-  .welcome { padding: 20px 18px 18px; display: flex; flex-direction: column; gap: 10px; transform: rotate(.5deg); }
+  .welcome { padding: 20px 18px; display: flex; flex-direction: column; gap: 10px; text-align: center; }
 
   /* 칭찬 한마디 */
   .cheer {
@@ -174,17 +174,19 @@
     display: flex; justify-content: center;
   }
   .cheer-box {
-    width: 100%; max-width: 540px;
-    padding: 22px 18px 18px; box-shadow: 0 8px 30px rgba(75, 58, 44, .4);
+    width: 100%; max-width: 540px; text-align: center;
+    padding: 22px 18px 18px; border: 4px solid var(--dot-a);
+    box-shadow: 0 10px 30px rgba(74, 59, 71, .25);
     display: flex; flex-direction: column; gap: 10px;
-    animation: rise .35s ease;
+    animation: bounce .45s ease;
   }
-  .cheer-box p { margin: 0; font-family: var(--hand); font-size: 28px; line-height: 1.3; font-weight: 700; }
-  .cheer-box p + p { font-size: 24px; }
+  .cheer-box::before { content: "★ ★ ★"; color: var(--yellow); font-size: 22px; letter-spacing: 6px; }
+  .cheer-box p { margin: 0; font-family: var(--cute); font-size: 26px; line-height: 1.35; }
+  .cheer-box p + p { font-size: 22px; color: var(--ink-soft); }
   .cheer-box .btn { align-self: stretch; }
-  @keyframes rise { from { transform: translateY(30px); opacity: .4; } to { transform: none; opacity: 1; } }
+  @keyframes bounce { 0% { transform: translateY(40px) scale(.9); } 60% { transform: translateY(-6px) scale(1.02); } 100% { transform: none; } }
 
-  footer.note { color: var(--ink); font-size: 16px; text-align: center; }
+  footer.note { color: var(--ink-soft); font-size: 16px; text-align: center; }
 
   @media (prefers-reduced-motion: reduce) {
     .slot.pop, .cheer-box { animation: none; }
@@ -198,7 +200,7 @@
   <header>
     <div class="date" id="today"></div>
     <h1>우리 집 1인 1역</h1>
-    <p class="hint">누가 무엇을 하는지 게시판에 다 같이 붙여요. 다 하면 내가 직접 체크해요!</p>
+    <p class="hint">누가 무엇을 하는지 여기에 다 같이 적어요. 다 하면 내가 직접 체크해요!</p>
   </header>
 
   <!-- 1. 사람 등록하기 -->
@@ -213,7 +215,7 @@
   </section>
 
   <div class="welcome paper" id="welcome">
-    <p class="hand" style="font-size:26px;margin:0">아직 게시판이 비어 있어요.</p>
+    <p class="hand" style="font-size:26px;margin:0">아직 아무도 없어요.</p>
     <p class="hint">가족이 다 같이 모여서 이름을 하나씩 써 보세요. 어떻게 생겼는지 먼저 보고 싶으면 아래 버튼을 눌러요.</p>
     <button class="btn line wide" id="sample" type="button">예시 가족으로 채워 보기</button>
   </div>
@@ -329,7 +331,7 @@
     var name = $("personName").value.trim();
     if (!name) { $("personMsg").textContent = "이름을 먼저 써 주세요."; return; }
     if (state.people.some(function (p) { return p.name === name; })) {
-      $("personMsg").textContent = "‘" + name + "’은(는) 벌써 게시판에 있어요."; return;
+      $("personMsg").textContent = "‘" + name + "’은(는) 벌써 있어요."; return;
     }
     addPerson(name);
     $("personName").value = "";
@@ -470,6 +472,7 @@
     state.people.forEach(function (p) {
       var card = el("article", "card paper");
       card.style.setProperty("--c", "var(" + p.color + ")");
+      card.style.setProperty("--c-soft", "var(" + p.color + "-soft)");
 
       var head = el("div", "card-head");
       var doneN = p.tasks.filter(function (t) { return t.done; }).length;
