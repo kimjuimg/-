@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fff4e8">
+<title>저녁 메뉴 룰렛</title>
+<style>
+  :root {
+    --bg: #fff4e8;
+    --card: #ffffff;
+    --ink: #3b2a20;
+    --sub: #8a7366;
+    --main: #ff7a59;
+    --main-dark: #e85f3e;
+    --line: #f1dfd0;
+    --off: #c9b8ac;
+    --radius: 22px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+    font-size: 20px;
+    line-height: 1.5;
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 48px;
+  }
+  header { text-align: center; margin-bottom: 8px; }
+  h1 { font-size: 30px; margin: 4px 0 2px; }
+  header p { margin: 0; color: var(--sub); font-size: 19px; }
+  h2 { font-size: 23px; margin: 0 0 4px; }
+  .step { color: var(--main); font-weight: 800; margin-right: 6px; }
+  .hint { color: var(--sub); font-size: 17px; margin: 0 0 14px; }
+
+  section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+    margin-top: 18px;
+    box-shadow: 0 4px 0 var(--line);
+  }
+
+  /* 룰렛 */
+  .wheel-wrap {
+    position: relative;
+    width: min(100%, 340px);
+    aspect-ratio: 1;
+    margin: 6px auto 18px;
+  }
+  .pointer {
+    position: absolute;
+    top: -6px; left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-top: 32px solid var(--ink);
+    z-index: 2;
+    filter: drop-shadow(0 2px 0 #fff);
+  }
+  #wheel {
+    width: 100%; height: 100%;
+    display: block;
+    transition: transform 4s cubic-bezier(.12,.75,.15,1);
+  }
+  .hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 64px; height: 64px;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border: 5px solid var(--ink);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 30px;
+    z-index: 2;
+  }
+
+  button {
+    font: inherit;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .spin {
+    display: block;
+    width: 100%;
+    padding: 18px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #fff;
+    background: var(--main);
+    box-shadow: 0 6px 0 var(--main-dark);
+  }
+  .spin:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--main-dark); }
+  .spin:disabled { opacity: .6; }
+
+  .result {
+    text-align: center;
+    margin-top: 18px;
+    min-height: 1em;
+  }
+  .result .label { color: var(--sub); font-size: 19px; }
+  .result .menu {
+    font-size: 46px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin: 4px 0;
+    word-break: keep-all;
+    animation: pop .5s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(.4); opacity: 0; }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* 후보 목록 */
+  form { display: flex; gap: 8px; margin-bottom: 14px; }
+  input {
+    flex: 1;
+    min-width: 0;
+    font: inherit;
+    padding: 12px 16px;
+    border: 2px solid var(--line);
+    border-radius: 999px;
+    background: #fffaf5;
+    color: var(--ink);
+  }
+  input:focus { outline: none; border-color: var(--main); }
+  .add {
+    padding: 0 20px;
+    font-weight: 800;
+    background: var(--ink);
+    color: #fff;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 4px;
+    border-bottom: 2px dashed var(--line);
+  }
+  li:last-child { border-bottom: none; }
+  .dot { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+  .name { flex: 1; font-size: 21px; word-break: keep-all; }
+  li.off .name { color: var(--off); text-decoration: line-through; }
+  li.off .dot { background: var(--off) !important; }
+  .tag {
+    font-size: 15px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--line);
+    color: var(--sub);
+    white-space: nowrap;
+  }
+  .del {
+    width: 44px; height: 44px;
+    flex: none;
+    background: #fbeee4;
+    color: var(--sub);
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .recent { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 6px 14px;
+    background: #fff0e6;
+    border-radius: 999px;
+    font-size: 18px;
+  }
+  .empty { color: var(--sub); font-size: 18px; }
+  .ghost {
+    margin-top: 14px;
+    padding: 10px 16px;
+    background: transparent;
+    color: var(--sub);
+    font-size: 17px;
+    text-decoration: underline;
+  }
+  .row-end { text-align: right; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>🍚 저녁 메뉴 룰렛</h1>
+    <p>"아무거나" 대신 룰렛으로 정해요.</p>
+  </header>
+
+  <!-- 1. 후보 목록 -->
+  <section aria-labelledby="t-list">
+    <h2 id="t-list"><span class="step">1</span>후보 목록</h2>
+    <p class="hint">메뉴나 식당을 넣어요.</p>
+    <form id="addForm">
+      <input id="newItem" type="text" maxlength="12" placeholder="예: 순두부찌개" autocomplete="off" aria-label="새 후보">
+      <button class="add" type="submit">추가</button>
+    </form>
+    <ul id="list"></ul>
+    <div class="row-end"><button class="ghost" id="resetList">처음 목록으로</button></div>
+  </section>
+  <!-- 2. 최근 것 빼기 -->
+  <section aria-labelledby="t-recent">
+    <h2 id="t-recent"><span class="step">2</span>최근 뽑힌 메뉴</h2>
+    <p class="hint">최근 3번 뽑힌 건 이번엔 빠져요.</p>
+    <div class="recent" id="recent"></div>
+    <div class="row-end"><button class="ghost" id="clearHistory">기록 지우기</button></div>
+  </section>
+
+  <!-- 3. 룰렛 돌리기 -->
+  <section aria-labelledby="t-spin">
+    <h2 id="t-spin"><span class="step">3</span>룰렛 돌리기</h2>
+    <p class="hint">다 같이 보면서 눌러요.</p>
+    <div class="wheel-wrap">
+      <div class="pointer" aria-hidden="true"></div>
+      <svg id="wheel" viewBox="-100 -100 200 200" role="img" aria-label="메뉴 룰렛"></svg>
+      <div class="hub" aria-hidden="true">🥄</div>
+    </div>
+    <button class="spin" id="spin">돌리기!</button>
+    <div class="result" id="result" aria-live="polite"></div>
+  </section>
+
+</main>
+
+<script>
+  const STORE_KEY = 'dinner-roulette-v1';
+  const RECENT_COUNT = 3;
+  const DEFAULT_ITEMS = [
+    '김치찌개', '된장찌개', '제육볶음', '카레라이스', '삼겹살',
+    '치킨', '짜장면', '떡볶이', '비빔밥', '돈가스'
+  ];
+  const COLORS = ['#ffb4a2', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff',
+                  '#a0c4ff', '#bdb2ff', '#ffc6ff', '#ffadad', '#b9fbc0'];
+
+  // 저장: 이 기기(localStorage)에만
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data.items) && Array.isArray(data.history)) return data;
+      }
+    } catch (e) {}
+    return { items: DEFAULT_ITEMS.slice(), history: [] };
+  }
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  const state = load();
+  let rotation = 0;
+  let spinning = false;
+
+  const $ = (id) => document.getElementById(id);
+  const wheel = $('wheel');
+
+  // 2. 최근 3번 안에 뽑힌 후보 빼기
+  function recentPicks() {
+    return state.history.slice(-RECENT_COUNT);
+  }
+  function candidates() {
+    const recent = recentPicks();
+    const pool = state.items.filter((it) => !recent.includes(it));
+    // 다 빠지면 전체에서 뽑는다
+    return pool.length ? pool : state.items.slice();
+  }
+
+  function colorOf(name) {
+    return COLORS[state.items.indexOf(name) % COLORS.length];
+  }
+
+  function drawWheel() {
+    const pool = candidates();
+    const n = pool.length;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    wheel.innerHTML = '';
+
+    if (n === 0) {
+      const c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('r', 96); c.setAttribute('fill', '#f1dfd0');
+      wheel.appendChild(c);
+      const t = document.createElementNS(svgNS, 'text');
+      t.setAttribute('text-anchor', 'middle'); t.setAttribute('y', 40);
+      t.setAttribute('font-size', 12); t.setAttribute('fill', '#8a7366');
+      t.textContent = '후보를 넣어 주세요';
+      wheel.appendChild(t);
+      return;
+    }
+
+    const step = 360 / n;
+    const r = 96;
+    const fontSize = n > 14 ? 8 : n > 10 ? 10 : 12;
+    pool.forEach((name, i) => {
+      const start = i * step, end = start + step;
+      let shape;
+      if (n === 1) {
+        shape = document.createElementNS(svgNS, 'circle');
+        shape.setAttribute('r', r);
+      } else {
+        const p = (deg) => {
+          const rad = (deg - 90) * Math.PI / 180;
+          return [r * Math.cos(rad), r * Math.sin(rad)];
+        };
+        const [x1, y1] = p(start), [x2, y2] = p(end);
+        const large = step > 180 ? 1 : 0;
+        shape = document.createElementNS(svgNS, 'path');
+        shape.setAttribute('d', `M0 0 L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`);
+      }
+      shape.setAttribute('fill', colorOf(name));
+      shape.setAttribute('stroke', '#fff');
+      shape.setAttribute('stroke-width', '1.5');
+      wheel.appendChild(shape);
+
+      const mid = start + step / 2;
+      const t = document.createElementNS(svgNS, 'text');
+      // 왼쪽 절반은 글씨가 뒤집히지 않게 반대로 돌린다
+      const flip = mid > 180;
+      t.setAttribute('transform', flip
+        ? `rotate(${mid + 90}) translate(${-(r - 8)} 0)`
+        : `rotate(${mid - 90}) translate(${r - 8} 0)`);
+      t.setAttribute('text-anchor', flip ? 'start' : 'end');
+      t.setAttribute('dominant-baseline', 'middle');
+      t.setAttribute('font-size', fontSize);
+      t.setAttribute('font-weight', '700');
+      t.setAttribute('fill', '#3b2a20');
+      t.textContent = name.length > 6 ? name.slice(0, 6) + '…' : name;
+      wheel.appendChild(t);
+    });
+    const ring = document.createElementNS(svgNS, 'circle');
+    ring.setAttribute('r', r); ring.setAttribute('fill', 'none');
+    ring.setAttribute('stroke', '#3b2a20'); ring.setAttribute('stroke-width', '4');
+    wheel.appendChild(ring);
+  }
+
+  function drawList() {
+    const recent = recentPicks();
+    const ul = $('list');
+    ul.innerHTML = '';
+    state.items.forEach((name) => {
+      const li = document.createElement('li');
+      const isOff = recent.includes(name) && candidates().length < state.items.length;
+      if (isOff) li.className = 'off';
+      li.innerHTML = '<span class="dot"></span><span class="name"></span>';
+      li.querySelector('.dot').style.background = colorOf(name);
+      li.querySelector('.name').textContent = name;
+      if (isOff) {
+        const tag = document.createElement('span');
+        tag.className = 'tag'; tag.textContent = '이번엔 쉬어요';
+        li.appendChild(tag);
+      }
+      const del = document.createElement('button');
+      del.className = 'del'; del.textContent = '✕';
+      del.setAttribute('aria-label', name + ' 지우기');
+      del.onclick = () => {
+        state.items = state.items.filter((it) => it !== name);
+        save(); render();
+      };
+      li.appendChild(del);
+      ul.appendChild(li);
+    });
+  }
+
+  function drawRecent() {
+    const box = $('recent');
+    const recent = recentPicks().slice().reverse();
+    box.innerHTML = '';
+    if (!recent.length) {
+      box.innerHTML = '<span class="empty">아직 없어요.</span>';
+      return;
+    }
+    recent.forEach((name) => {
+      const c = document.createElement('span');
+      c.className = 'chip'; c.textContent = name;
+      box.appendChild(c);
+    });
+  }
+
+  function render() {
+    drawWheel();
+    drawList();
+    drawRecent();
+    $('spin').disabled = state.items.length === 0;
+  }
+
+  function showResult(name) {
+    $('result').innerHTML =
+      '<div class="label">오늘 저녁은</div><div class="menu"></div><div class="label">결정! 🎉</div>';
+    $('result').querySelector('.menu').textContent = name;
+  }
+
+  // 3. 룰렛 돌리기
+  $('spin').onclick = () => {
+    if (spinning) return;
+    const pool = candidates();
+    if (!pool.length) return;
+    spinning = true;
+    $('spin').disabled = true;
+    $('result').innerHTML = '<div class="label">두구두구…</div>';
+
+    const n = pool.length;
+    const idx = Math.floor(Math.random() * n);
+    const step = 360 / n;
+    const jitter = (Math.random() - 0.5) * step * 0.6;
+    const target = (360 - (idx + 0.5) * step + jitter + 360) % 360;
+    const current = ((rotation % 360) + 360) % 360;
+    rotation += 360 * 6 + ((target - current + 360) % 360);
+    wheel.style.transform = `rotate(${rotation}deg)`;
+
+    setTimeout(() => {
+      const picked = pool[idx];
+      state.history.push(picked);
+      state.history = state.history.slice(-20);
+      save();
+      showResult(picked);
+      spinning = false;
+      // 다음 판을 위해 룰렛을 새 후보로 다시 그린다
+      wheel.style.transition = 'none';
+      rotation = 0;
+      wheel.style.transform = 'rotate(0deg)';
+      render();
+      void wheel.getBoundingClientRect();
+      wheel.style.transition = '';
+    }, 4100);
+  };
+
+  $('addForm').onsubmit = (e) => {
+    e.preventDefault();
+    const input = $('newItem');
+    const name = input.value.trim();
+    if (!name) return;
+    if (state.items.includes(name)) {
+      input.value = '';
+      input.placeholder = '이미 있어요';
+      return;
+    }
+    state.items.push(name);
+    input.value = '';
+    input.placeholder = '예: 순두부찌개';
+    save(); render();
+  };
+
+  $('clearHistory').onclick = () => {
+    if (!confirm('최근 뽑힌 기록을 지울까요?')) return;
+    state.history = [];
+    save(); render();
+  };
+
+  $('resetList').onclick = () => {
+    if (!confirm('처음 목록 10개로 되돌릴까요?')) return;
+    state.items = DEFAULT_ITEMS.slice();
+    save(); render();
+  };
+
+  render();
+</script>
+</body>
+</html>
